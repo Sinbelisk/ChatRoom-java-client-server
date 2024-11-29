@@ -20,7 +20,7 @@ public class SimpleLogger {
 
         ConsoleHandler consoleHandler = new ConsoleHandler();
         consoleHandler.setLevel(Level.ALL);
-        consoleHandler.setFormatter(getFormatter());
+        consoleHandler.setFormatter(getFormatter(clazz));
 
 
         logger.addHandler(consoleHandler);
@@ -29,7 +29,7 @@ public class SimpleLogger {
         return logger;
     }
 
-    private static Formatter getFormatter() {
+    private static Formatter getFormatter(Class<?> clazz) {
         return new Formatter() {
             @Override
             public String format(LogRecord record) {
@@ -44,17 +44,17 @@ public class SimpleLogger {
 
                 String color = getColorForLevel(level);
 
-                return String.format("%s[%s] [%s] [%s] - %s%s\n", color, timestamp, level, className, message, "\u001B[0m");
+                return String.format("%s[%s] [%s] [%s] [%s] - %s%s\n", color, timestamp, level,clazz.getPackageName(), className, message, "\u001B[0m");
             }
 
-            // Método para obtener el color según el nivel
+            // Returns a color depending of the severity.
             private String getColorForLevel(String level) {
                 return switch (level) {
-                    case "SEVERE" -> "\u001B[31m"; // Rojo
-                    case "WARNING" -> "\u001B[33m"; // Amarillo
-                    case "INFO" -> "\u001B[32m"; // Verde
-                    case "FINE", "FINER", "FINEST" -> "\u001B[34m"; // Azul
-                    default -> "\u001B[37m"; // Blanco por defecto
+                    case "SEVERE" -> "\u001B[31m"; // Red
+                    case "WARNING" -> "\u001B[33m"; // Yellow
+                    case "INFO" -> "\u001B[32m"; // Green
+                    case "FINE", "FINER", "FINEST" -> "\u001B[34m"; // Blue
+                    default -> "\u001B[37m"; // Default -> white
                 };
             }
         };
