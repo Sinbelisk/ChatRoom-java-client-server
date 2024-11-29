@@ -8,18 +8,18 @@ import java.util.logging.Logger;
 
 // TODO: address validation when opened with a custom address and port
 // TODO: more logging.
-public abstract class AbstractChatSocket implements AutoCloseable {
-    protected DatagramSocket socket;
-    protected InetAddress ip;
-    protected int port;
-    protected static Logger logger = SimpleLogger.getLogger(AbstractChatSocket.class);
+public class ChatSocketConnection implements AutoCloseable {
+    private DatagramSocket socket;
+    private InetAddress ip;
+    private int port;
+    private static final Logger logger = SimpleLogger.getLogger(ChatSocketConnection.class);
 
     /**
      * Instantiates the socket and sets an ip and port.
      * @param ip the host ip.
      * @param port the host port.
      */
-    public AbstractChatSocket(InetAddress ip, int port) {
+    public ChatSocketConnection(InetAddress ip, int port) {
         this.ip = ip;
         this.port = port;
 
@@ -93,7 +93,7 @@ public abstract class AbstractChatSocket implements AutoCloseable {
      * @param msg message of the log.
      * @param args arguments from the message.
      */
-    protected void log(Level level, String msg, Object... args) {
+    public void log(Level level, String msg, Object... args) {
         logger.log(level, String.format(msg, args));
     }
 }
