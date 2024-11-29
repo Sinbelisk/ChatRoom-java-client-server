@@ -20,7 +20,7 @@ public class SimpleLogger {
 
         ConsoleHandler consoleHandler = new ConsoleHandler();
         consoleHandler.setLevel(Level.ALL);
-        consoleHandler.setFormatter(getFormatter(clazz));
+        consoleHandler.setFormatter(getFormatter());
 
 
         logger.addHandler(consoleHandler);
@@ -29,14 +29,14 @@ public class SimpleLogger {
         return logger;
     }
 
-    private static Formatter getFormatter(Class<?> clazz) {
+    private static Formatter getFormatter() {
         return new Formatter() {
             @Override
             public String format(LogRecord record) {
                 String timestamp = java.time.LocalDateTime.now()
                         .format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
                 String level = record.getLevel().toString();
-                String className = record.getSourceClassName();
+                String name = record.getLoggerName();
                 String message = record.getMessage();
                 if (record.getParameters() != null) {
                     message = MessageFormat.format(message, record.getParameters());
@@ -44,7 +44,7 @@ public class SimpleLogger {
 
                 String color = getColorForLevel(level);
 
-                return String.format("%s[%s] [%s] [%s] [%s] - %s%s\n", color, timestamp, level,clazz.getPackageName(), className, message, "\u001B[0m");
+                return String.format("%s[%s] [%s] [%s] - %s%s\n", color, timestamp, level, name, message, "\u001B[0m");
             }
 
             // Returns a color depending of the severity.

@@ -10,21 +10,21 @@ public abstract class AbstractChatSocket implements AutoCloseable {
     protected DatagramSocket socket;
     protected InetAddress ip;
     protected int port;
-    protected static final Logger logger = SimpleLogger.getLogger(AbstractChatSocket.class);
+    protected static Logger logger = SimpleLogger.getLogger(AbstractChatSocket.class);
 
     public AbstractChatSocket(InetAddress ip, int port) {
         this.ip = ip;
         this.port = port;
 
-        log(Level.INFO, "New ChatSocket created: <%s>", getClassName());
+        log(Level.INFO, "New Socket created: <%s>", getClassName());
     }
 
     public void open() throws SocketException {
         if (socket == null || socket.isClosed()) {
             socket = new DatagramSocket(port, ip);
-            log(Level.INFO, "ChatSocket <%s> connected to: %s:%d", getClassName(), ip.getHostAddress(), port);
+            log(Level.INFO, "Socket <%s> connected to: %s:%d", getClassName(), ip.getHostAddress(), port);
         } else {
-            log(Level.WARNING, "ChatSocket <%s> tried to connect, but the socket is already open! [Status: Bound to %s:%d]",
+            log(Level.WARNING, "Socket <%s> tried to connect, but the socket is already open! [Status: Bound to %s:%d]",
                     getClassName(), socket.getLocalAddress(), socket.getLocalPort());
         }
     }
@@ -33,9 +33,9 @@ public abstract class AbstractChatSocket implements AutoCloseable {
     public void close() {
         if (socket != null && !socket.isClosed()) {
             socket.close();
-            log(Level.INFO, "ChatSocket <%s> disconnected from: %s:%d", getClassName(), ip.getHostAddress(), port);
+            log(Level.INFO, "Socket <%s> disconnected from: %s:%d", getClassName(), ip.getHostAddress(), port);
         } else {
-            log(Level.WARNING, "ChatSocket <%s> tried to disconnect, but the socket is already closed! [Status: Bound to %s:%d]",
+            log(Level.WARNING, "Socket <%s> tried to disconnect, but the socket is already closed! [Status: Bound to %s:%d]",
                     getClassName(), socket.getLocalAddress(), socket.getLocalPort());
         }
     }
