@@ -1,15 +1,27 @@
-package common.user;
+package common.models;
 
 import java.net.InetAddress;
 import java.util.Objects;
-
-public class User {
+public class User{
     private final String nick;
-    private final InetAddress address;
-
-    public User(String nick, InetAddress address) {
+    private final InetAddress ip;
+    private final int port;
+    public User(String nick, InetAddress ip, int port) {
         this.nick = nick;
-        this.address = address;
+        this.ip = ip;
+        this.port = port;
+    }
+
+    public InetAddress getIp() {
+        return ip;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public String getNick() {
+        return nick;
     }
 
     @Override
@@ -24,4 +36,5 @@ public class User {
     public int hashCode() {
         return Objects.hash(nick);
     }
+
 }
