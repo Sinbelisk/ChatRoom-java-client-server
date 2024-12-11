@@ -19,9 +19,17 @@ public class ChatSocketConnection implements AutoCloseable {
      * @param ip the host ip.
      * @param port the host port.
      */
-    public ChatSocketConnection(InetAddress ip, int port) {
+    public ChatSocketConnection(InetAddress ip, int port) throws SocketException {
         this.ip = ip;
         this.port = port;
+
+        log(Level.INFO, "New Socket created: <%s>", getClassName());
+    }
+
+    public ChatSocketConnection() throws SocketException {
+        this.ip = null;
+        this.port = -1;
+        socket = new DatagramSocket();
 
         log(Level.INFO, "New Socket created: <%s>", getClassName());
     }
