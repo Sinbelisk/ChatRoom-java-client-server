@@ -20,7 +20,7 @@ public class SimpleLogger {
         // Reutilizar logger si ya existe
         Logger logger = loggers.get(clazz);
         if (logger == null) {
-            logger = Logger.getLogger(clazz.getName());
+            logger = Logger.getLogger(clazz.getSimpleName());
 
             // Eliminar handlers anteriores si los hay
             for (Handler handler : logger.getHandlers()) {

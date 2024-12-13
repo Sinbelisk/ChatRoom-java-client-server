@@ -20,6 +20,9 @@ public class Server extends UDPSocket {
 
     @Override
     public void processPacket(DatagramPacket packet) {
+        InetAddress sourceAddress = packet.getAddress();
+        int sourcePort = packet.getPort();
+
 
     }
 
