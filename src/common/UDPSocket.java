@@ -17,6 +17,7 @@ public abstract class UDPSocket implements UDPOperation {
     public UDPSocket(int port, int bufferSize) throws SocketException {
         socket = new DatagramSocket(port);
         buffer = new byte[bufferSize];
+
         log(Level.INFO, "Socket created on port %d with buffer size %d", port, bufferSize);
     }
 

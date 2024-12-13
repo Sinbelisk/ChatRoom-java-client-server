@@ -1,5 +1,6 @@
 package server;
 
+import common.UDPSocket;
 import common.models.ChatRoom;
 
 import java.io.IOException;
@@ -9,23 +10,16 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 
 public class Server extends UDPSocket {
-    private byte[] buffer = new byte[1024];
+    private static final int DEFAULT_BUFFER_SIZE = 1024;
     private final ChatRoom chatRoom = new ChatRoom();
-    public Server(int port) throws UnknownHostException, SocketException {
-        super(InetAddress.getLocalHost(), port);
-        socket.open();
-    }
-    @Override
-    public void receive() throws IOException {
-        DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-        getSocket().receive(packet);
 
-        String message = new String(packet.getData());
-        System.out.println(message);
+    public Server(int port) throws SocketException {
+        super(port, DEFAULT_BUFFER_SIZE);
+
     }
 
     @Override
-    public void send(byte[] data) {
+    public void processPacket(DatagramPacket packet) {
 
     }
 
