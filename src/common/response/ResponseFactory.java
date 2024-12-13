@@ -13,7 +13,7 @@ public class ResponseFactory {
 
     private static final Logger logger = SimpleLogger.getInstance().getLogger(ResponseFactory.class);
 
-    public Response createResponse(Map<String, String> parsedPacket) {
+    public static Response createResponse(Map<String, String> parsedPacket) {
         if (parsedPacket == null) {
             return new Response(generateId(), ResponseStatus.INVALID_FORMAT, null);
         }
@@ -25,7 +25,7 @@ public class ResponseFactory {
         return null;
     }
 
-    private String generateId(){
+    private static String generateId(){
         return UUID.randomUUID().toString();
     }
 }

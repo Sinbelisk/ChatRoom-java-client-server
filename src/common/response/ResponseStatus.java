@@ -4,11 +4,9 @@ package common.response;
 public enum ResponseStatus {
     VALID,
     INVALID,
-    INVALID_CREDENTIALS,
     ERROR,
     UNKNOWN_TYPE,
-    INVALID_FORMAT,
-    PROCESSED;
+    INVALID_FORMAT;
 
     @Override
     public String toString() {

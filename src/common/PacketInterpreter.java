@@ -1,6 +1,8 @@
 package common;
 
 import common.response.PacketData;
+
+import java.net.DatagramPacket;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -18,11 +20,8 @@ public class PacketInterpreter {
      * @param packet
      * @return
      */
-    public Map<String , String> parsePacket(String packet) {
-        if (packet == null || !packet.contains(";")) {
-            logger.log(Level.WARNING, "Invalid packet");
-            return null; // Formato inválido
-        }
+    public Map<String , String> parsePacket(DatagramPacket rawPacket) {
+        String packet = new String(rawPacket.getData());
 
         String[] parts = packet.split(";", 3);
         if (parts.length < 3) {

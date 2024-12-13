@@ -13,7 +13,11 @@ public class Response {
 
     @Override
     public String toString() {
-        return id + ";ACK;" + status + (message != null ? ";" + message : "");
+        return id + status + (message != null ? ";" + message : "");
+    }
+
+    public byte[] getBytes(){
+        return toString().getBytes();
     }
 
     public String getId() {
