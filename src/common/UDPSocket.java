@@ -1,37 +1,61 @@
 package common;
 
 import java.io.IOException;
+import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public abstract class UDPSocket {
-    protected final ChatSocketConnection socket;
-    protected final Logger logger;
+public abstract class UDPSocket implements UDPOperation {
+    private final byte[] buffer;
+    private final Logger logger = SimpleLogger.getInstance().getLogger(getClass());
 
-    public UDPSocket(InetAddress ip, int port) throws SocketException {
-        this.socket = new ChatSocketConnection(ip, port);
+    protected final DatagramSocket socket;
 
-        // This will create a logger for the client and server.
-        // There's no need on make it static because there will be only one instance of both classes.
-        this.logger = SimpleLogger.getLogger(getClass());
+    public UDPSocket(int port, int bufferSize) throws SocketException {
+        socket = new DatagramSocket(port);
+        buffer = new byte[bufferSize];
+        log(Level.INFO, "Socket created on port %d with buffer size %d", port, bufferSize);
     }
 
-    public UDPSocket() throws SocketException {
-        this.logger = SimpleLogger.getLogger(getClass());
-        this.socket = new ChatSocketConnection();
+    public UDPSocket(int bufferSize) throws SocketException {
+        socket = new DatagramSocket();
+        buffer = new byte[bufferSize];
+        log(Level.INFO, "Socket created with buffer size %d", bufferSize);
     }
 
-    public abstract void receive() throws IOException;
-    public abstract void send(byte[] data) throws IOException;
+    @Override
+    public void send(byte[] data, InetAddress address, int port) {
+        try {
+            DatagramPacket packet = new DatagramPacket(data, 0, data.length, address, port);
+            socket.send(packet);
+            log(Level.INFO, "Data sent to %s:%d, size: %d bytes", address.toString(), port, data.length);
+        } catch (SocketException e) {
+            log(Level.SEVERE, "Socket exception occurred while sending data: %s", e.getMessage());
+        } catch (IOException e) {
+            log(Level.SEVERE, "IO exception occurred while sending data: %s", e.getMessage());
+        }
+    }
 
-    public DatagramSocket getSocket() {
-        return socket.getSocket();
+    @Override
+    public void receive() {
+        try {
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+            socket.receive(packet);
+            log(Level.INFO, "Packet received from %s:%d, size: %d bytes",
+                    packet.getAddress().toString(), packet.getPort(), packet.getLength());
+            processPacket(packet);
+        } catch (SocketException e) {
+            log(Level.SEVERE, "Socket exception occurred while receiving data: %s", e.getMessage());
+        } catch (IOException e) {
+            log(Level.SEVERE, "IO exception occurred while receiving data: %s", e.getMessage());
+        }
     }
 
     protected void log(Level level, String msg, Object... args) {
         logger.log(level, String.format(msg, args));
     }
 }
+

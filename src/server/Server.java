@@ -1,6 +1,5 @@
 package server;
 
-import common.UDPSocket;
 import common.models.ChatRoom;
 
 import java.io.IOException;
