@@ -45,7 +45,6 @@ public class Server extends UDPSocket {
             return;
         }
 
-
         if (msg.getType() == MessageType.COMMAND) {
             User owner = msg.getOwner();
             chatRoom.addUser(owner);
@@ -66,6 +65,5 @@ public class Server extends UDPSocket {
                 send(msgData, user.getIp(), user.getPort());
             }
         }
-
     }
 }

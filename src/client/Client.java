@@ -14,7 +14,6 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 
 public class Client extends UDPSocket {
-    private final PacketInterpreter interpreter = new PacketInterpreter();
     private static final int DEFAULT_BUFFER_SIZE = 1024;
     public Client() throws IOException {
         super(DEFAULT_BUFFER_SIZE);
@@ -28,7 +27,8 @@ public class Client extends UDPSocket {
     @Override
     public void processPacket(DatagramPacket packet) {
         String msg = new String(packet.getData(), 0, packet.getLength());
-        System.out.println(msg);
+        System.out.println("\r" + msg);
+        System.out.print("\r> ");
     }
 
     public static void main(String[] args) throws Exception {
@@ -36,11 +36,11 @@ public class Client extends UDPSocket {
 
         System.out.print("Nombre de Usuario: ");
         Scanner s = new Scanner(System.in);
-        String user = s.nextLine();
-        clearCurrentLine();
 
-        String bolivia = String.format("command;%s;new user: %s", user, user);
-        client.send(bolivia.getBytes(), InetAddress.getLocalHost(), 6969);
+        String user = s.nextLine();
+
+        String formatted = String.format("command;%s;new user: %s", user, user);
+        client.send(formatted.getBytes(), InetAddress.getLocalHost(), 6969);
 
         Thread thread = new Thread(()->{
             while (true){
@@ -50,18 +50,11 @@ public class Client extends UDPSocket {
 
         thread.start();
         while(true){
+            System.out.print("\r> ");
             String msg = s.nextLine();
-            clearCurrentLine();
 
             String test = String.format("msg;%s;%s", user, msg);
             client.send(test.getBytes(), InetAddress.getLocalHost(), 6969);
         }
-    }
-
-    // Método para limpiar la línea actual en la consola
-    // NO FUNCIONA EN INTELLIJ.
-    private static void clearCurrentLine() {
-        System.out.print("\033[2K"); // ANSI escape para borrar la línea
-        System.out.print("\r");     // Llevar el cursor al inicio de la línea
     }
 }
