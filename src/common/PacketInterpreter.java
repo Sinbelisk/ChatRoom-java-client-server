@@ -9,6 +9,7 @@ import server.ServerConstants;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -20,10 +21,11 @@ public class PacketInterpreter {
     public Message parsePacket(DatagramPacket rawPacket) {
         String packetContent = new String(rawPacket.getData(), 0 , rawPacket.getLength());
         InetAddress userAddress = rawPacket.getAddress();
+        int userPort = rawPacket.getPort();
 
         String[] parts = packetContent.split(";", 3);
         if (parts.length < 3) {
-            logger.log(Level.WARNING, "Invalid Format");
+            logger.log(Level.WARNING, "Invalid Format: " + Arrays.toString(parts));
             return null; // Formato inválido
         }
 
@@ -34,7 +36,7 @@ public class PacketInterpreter {
             logger.log(Level.WARNING, "Invalid packet type");
         }
 
-        User owner = new User(parts[1], userAddress, ServerConstants.SERVER_PORT);
+        User owner = new User(parts[1], userAddress, userPort);
         Message msg = new Message(parts[2], owner, type);
 
         logger.log(Level.INFO, "New packetContent parsed: [id={0},type={1},data={2}]", new Object[]{msg.getId(), msg.getType().toString(), msg.getContent()});

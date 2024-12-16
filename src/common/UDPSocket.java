@@ -9,8 +9,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public abstract class UDPSocket implements UDPOperation {
-    private final byte[] buffer;
-    private final Logger logger = SimpleLogger.getInstance().getLogger(getClass());
+    protected final byte[] buffer;
+    protected final Logger logger = SimpleLogger.getInstance().getLogger(getClass());
 
     protected final DatagramSocket socket;
 

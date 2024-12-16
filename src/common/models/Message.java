@@ -40,6 +40,14 @@ public class Message {
         return type;
     }
 
+    public String getFormattedContent(){
+        return String.format("<%s> %s", owner.getNick(), content);
+    }
+
+    public byte[] getBytes(){
+        return getFormattedContent().getBytes();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

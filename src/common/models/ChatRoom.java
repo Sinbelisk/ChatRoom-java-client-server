@@ -23,4 +23,8 @@ public class ChatRoom {
     public boolean isFull(){
         return users.size() == 10;
     }
+
+    public Set<User> getUsers() {
+        return users;
+    }
 }
