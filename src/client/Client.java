@@ -21,7 +21,6 @@ public class Client extends UDPSocket {
         logger.addHandler(fileHandler);
         logger.setUseParentHandlers(false);
         logger.setLevel(Level.OFF);
-
     }
 
     @Override
@@ -39,7 +38,7 @@ public class Client extends UDPSocket {
 
         String user = s.nextLine();
 
-        String formatted = String.format("command;%s;new user: %s", user, user);
+        String formatted = String.format("command;%s;/login %s", user, user);
         client.send(formatted.getBytes(), InetAddress.getLocalHost(), 6969);
 
         Thread thread = new Thread(()->{

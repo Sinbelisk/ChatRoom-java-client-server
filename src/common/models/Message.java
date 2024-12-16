@@ -8,7 +8,7 @@ import java.util.UUID;
 public class Message {
     private final String id;
     private final String content;
-    private final MessageType type;
+    private final MessageType type; // Type MSG/CMD
     private final User owner;
     private final Timestamp time;
 

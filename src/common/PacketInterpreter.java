@@ -3,21 +3,17 @@ package common;
 import common.models.Message;
 import common.models.MessageType;
 import common.models.User;
-import common.response.PacketData;
-import server.ServerConstants;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class PacketInterpreter {
     private static final Logger logger = SimpleLogger.getInstance().getLogger(PacketInterpreter.class);
 
+    // Parses a packet data int a packet.
     public Message parsePacket(DatagramPacket rawPacket) {
         String packetContent = new String(rawPacket.getData(), 0 , rawPacket.getLength());
         InetAddress userAddress = rawPacket.getAddress();
