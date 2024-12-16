@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public class Client extends UDPSocket {
@@ -25,7 +26,7 @@ public class Client extends UDPSocket {
     public static void main(String[] args) throws Exception {
         Client client = new Client();
 
-        String bolivia = "bolivia";
+        String bolivia = "command;ElXokas;new user: ElXokas";
         client.send(bolivia.getBytes(), InetAddress.getLocalHost(), 6969);
 
         client.receive();

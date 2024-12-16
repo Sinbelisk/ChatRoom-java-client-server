@@ -3,6 +3,8 @@ package server;
 import common.PacketInterpreter;
 import common.UDPSocket;
 import common.models.ChatRoom;
+import common.models.Message;
+import common.models.User;
 import common.response.Response;
 import common.response.ResponseFactory;
 
@@ -12,6 +14,7 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Map;
+import java.util.logging.Level;
 
 public class Server extends UDPSocket {
     private static final int DEFAULT_BUFFER_SIZE = 1024;
@@ -28,10 +31,11 @@ public class Server extends UDPSocket {
         InetAddress sourceAddress = packet.getAddress();
         int sourcePort = packet.getPort();
 
-        Map<String, String> parsedData = interpreter.parsePacket(packet);
-        Response response = ResponseFactory.createResponse(parsedData);
+        Message msg = interpreter.parsePacket(packet);
+        User owner = msg.getOwner();
 
-        send(response.getBytes(), sourceAddress, sourcePort);
+        chatRoom.addUser(owner);
+        log(Level.INFO, "New user entered the room: %s", owner.getNick());
     }
 
     public static void main(String[] args) throws Exception {

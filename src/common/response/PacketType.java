@@ -1,9 +1,5 @@
 package common.response;
-
-import common.PacketInterpreter;
-
 public enum PacketType {
-    LOGIN,
     MESSAGE,
     COMMAND;
 
