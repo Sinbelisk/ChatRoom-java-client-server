@@ -6,6 +6,7 @@ out/
 ## Proeject
 .idea/
 chat.iml
+*.log
 
 ### Eclipse ###
 .apt_generated
