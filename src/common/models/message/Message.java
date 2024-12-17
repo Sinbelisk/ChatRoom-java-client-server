@@ -1,4 +1,6 @@
-package common.models;
+package common.models.message;
+
+import common.models.User;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -8,9 +10,9 @@ import java.util.UUID;
 public class Message {
     private final String id;
     private final String content;
-    private final MessageType type; // Type MSG/CMD
     private final User owner;
     private final Timestamp time;
+    private final MessageType type;
 
     public Message(String content, User owner, MessageType type) {
         this.id = UUID.randomUUID().toString();
@@ -22,6 +24,10 @@ public class Message {
 
     public String getContent() {
         return content;
+    }
+
+    public MessageType getType() {
+        return type;
     }
 
     public Timestamp getTime() {
@@ -36,9 +42,6 @@ public class Message {
         return id;
     }
 
-    public MessageType getType() {
-        return type;
-    }
 
     public String getFormattedContent(){
         return String.format("<%s> %s", owner.getNick(), content);

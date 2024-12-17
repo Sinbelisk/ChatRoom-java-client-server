@@ -1,10 +1,9 @@
 package common;
 
-import common.models.Message;
-import common.models.MessageType;
+import common.models.message.Message;
+import common.models.message.MessageFactory;
+import common.models.message.MessageType;
 import common.models.User;
-import server.commands.Command;
-import server.commands.CommandParameters;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;
@@ -35,10 +34,9 @@ public class PacketInterpreter {
         }
 
         User owner = new User(parts[1], userAddress, userPort);
-        Message msg = new Message(parts[2], owner, type);
+        Message msg = MessageFactory.createChatMessage(parts[2], owner);
 
         logger.log(Level.INFO, "New packetContent parsed: [id={0},type={1},data={2}]", new Object[]{msg.getId(), msg.getType().toString(), msg.getContent()});
-
         return msg;
     }
 }

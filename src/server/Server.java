@@ -3,14 +3,13 @@ package server;
 import common.PacketInterpreter;
 import common.UDPSocket;
 import common.models.ChatRoom;
-import common.models.Message;
-import common.models.MessageType;
+import common.models.message.Message;
+import common.models.message.MessageFactory;
+import common.models.message.MessageType;
 import common.models.User;
 
 import java.net.DatagramPacket;
-import java.net.InetAddress;
 import java.net.SocketException;
-import java.util.Deque;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -42,20 +41,22 @@ public class Server extends UDPSocket {
 
         if (msg.getType() == MessageType.COMMAND) {
             User owner = msg.getOwner();
-            String content = msg.getContent();
 
             if(!chatRoom.addUser(owner)){
-                log(Level.WARNING, "User %s is already in the room");
-                broadcastMessage("A user with that username is already on the room",owner);
+                log(Level.WARNING, "User %s is already in the room", owner.getNick());
+                broadcastMessage(MessageFactory.createStatusMessage(String.format("User %s is already in the chat room!", owner.getNick())));
             }
 
             broadcastHistory(owner);
-            broadcastMessage(String.format("User %s connected to the chat!", owner.getNick()));
+            broadcastMessage(MessageFactory.createStatusMessage(String.format("User %s connected to the chat!", owner.getNick())));
             log(Level.INFO, "New user entered the room: %s", owner.getNick());
         }
         else {
-            chatRoom.saveMessage(msg);
-            broadcastMessage(msg);
+            // Comprobación de seguridad por si el cliente logra "conectarse" pero no se encuentra en la sala
+            if(!chatRoom.hasUser(msg.getOwner())){
+                chatRoom.saveMessage(msg);
+                broadcastMessage(msg);
+            }
         }
     }
 
@@ -71,15 +72,8 @@ public class Server extends UDPSocket {
         }
     }
 
-    private void broadcastMessage(String content){
-        Set<User> users = chatRoom.getUsers();
-        for (User user : users) {
-            send(content.getBytes(), user.getIp(), user.getPort());
-        }
-    }
-
-    private void broadcastMessage(String content, User user){
-        send(content.getBytes(), user.getIp(), user.getPort());
+    private void broadcastMessage(Message content, User user){
+        send(content.getContent().getBytes(), user.getIp(), user.getPort());
     }
 
     private void broadcastHistory(User user){

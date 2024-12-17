@@ -1,5 +1,7 @@
 package common.models;
 
+import common.models.message.Message;
+
 import java.util.*;
 
 public class ChatRoom {
@@ -14,6 +16,9 @@ public class ChatRoom {
     }
     public void removeUser(User user){
         users.remove(user);
+    }
+    public boolean hasUser(User user){
+        return users.contains(user);
     }
     public void saveMessage(Message message){
         if(messageHistory.size() == MAX_HISTORY) messageHistory.pollFirst();
