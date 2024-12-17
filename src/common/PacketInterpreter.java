@@ -3,6 +3,8 @@ package common;
 import common.models.Message;
 import common.models.MessageType;
 import common.models.User;
+import server.commands.Command;
+import server.commands.CommandParameters;
 
 import java.net.DatagramPacket;
 import java.net.InetAddress;

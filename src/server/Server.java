@@ -8,7 +8,9 @@ import common.models.MessageType;
 import common.models.User;
 
 import java.net.DatagramPacket;
+import java.net.InetAddress;
 import java.net.SocketException;
+import java.util.Deque;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -19,7 +21,6 @@ public class Server extends UDPSocket {
 
     public Server(int port) throws SocketException {
         super(port, DEFAULT_BUFFER_SIZE);
-
     }
 
     public static void main(String[] args) throws Exception {
@@ -41,10 +42,14 @@ public class Server extends UDPSocket {
 
         if (msg.getType() == MessageType.COMMAND) {
             User owner = msg.getOwner();
+            String content = msg.getContent();
+
             chatRoom.addUser(owner);
+            broadcastHistory(owner);
             log(Level.INFO, "New user entered the room: %s", owner.getNick());
         }
         else {
+            chatRoom.saveMessage(msg);
             broadcastMessage(msg);
         }
     }
@@ -59,5 +64,10 @@ public class Server extends UDPSocket {
                 send(msgData, user.getIp(), user.getPort());
             }
         }
+    }
+
+    private void broadcastHistory(User user){
+        String history = chatRoom.getMessageHistory();
+        send(history.getBytes(), user.getIp(), user.getPort());
     }
 }

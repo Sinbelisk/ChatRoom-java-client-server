@@ -1,25 +1,16 @@
 package server.commands;
 
+import common.models.ChatRoom;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class CommandManager {
     private final Map<String, Command> commands = new HashMap<>();
+    private final ChatRoom chatRoom;
+    public CommandManager(ChatRoom chatRoom){
+        this.chatRoom = new ChatRoom();
 
-    public CommandManager(){
-
+        commands.put("login", new LoginCommand(chatRoom));
     }
-
-    public void register(String identifier, Command command){
-        commands.put(identifier, command);
-    }
-    public void executeCommand(String identifier){
-        Command command = commands.get(identifier);
-        command.execute();
-    }
-
-    public Command getCommand(String identifier){
-        return commands.get(identifier);
-    }
-
 }
