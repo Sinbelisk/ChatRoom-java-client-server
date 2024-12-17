@@ -44,8 +44,13 @@ public class Server extends UDPSocket {
             User owner = msg.getOwner();
             String content = msg.getContent();
 
-            chatRoom.addUser(owner);
+            if(!chatRoom.addUser(owner)){
+                log(Level.WARNING, "User %s is already in the room");
+                broadcastMessage("A user with that username is already on the room",owner);
+            }
+
             broadcastHistory(owner);
+            broadcastMessage(String.format("User %s connected to the chat!", owner.getNick()));
             log(Level.INFO, "New user entered the room: %s", owner.getNick());
         }
         else {
@@ -64,6 +69,17 @@ public class Server extends UDPSocket {
                 send(msgData, user.getIp(), user.getPort());
             }
         }
+    }
+
+    private void broadcastMessage(String content){
+        Set<User> users = chatRoom.getUsers();
+        for (User user : users) {
+            send(content.getBytes(), user.getIp(), user.getPort());
+        }
+    }
+
+    private void broadcastMessage(String content, User user){
+        send(content.getBytes(), user.getIp(), user.getPort());
     }
 
     private void broadcastHistory(User user){

@@ -12,10 +12,6 @@ public class ChatRoom {
         users.add(user);
         return true;
     }
-
-    public boolean userAlreadyInRoom(User user){
-        return users.contains(user);
-    }
     public void removeUser(User user){
         users.remove(user);
     }
