@@ -1,13 +1,13 @@
 package common.models;
 
-import common.models.message.Message;
+import common.models.message.ClientMessage;
 
 import java.util.*;
 
 public class ChatRoom {
     private static final int MAX_HISTORY = 10;
     private final Set<User> users = new HashSet<>();
-    private final Deque<Message> messageHistory = new ArrayDeque<>(MAX_HISTORY);
+    private final Deque<ClientMessage> clientMessageHistory = new ArrayDeque<>(MAX_HISTORY);
     public boolean addUser(User user){
         if(users.contains(user)) return false;
 
@@ -20,10 +20,10 @@ public class ChatRoom {
     public boolean hasUser(User user){
         return users.contains(user);
     }
-    public void saveMessage(Message message){
-        if(messageHistory.size() == MAX_HISTORY) messageHistory.pollFirst();
+    public void saveMessage(ClientMessage clientMessage){
+        if(clientMessageHistory.size() == MAX_HISTORY) clientMessageHistory.pollFirst();
 
-        messageHistory.addLast(message);
+        clientMessageHistory.addLast(clientMessage);
     }
     public int getCapacity(){
         return users.size();
@@ -38,8 +38,8 @@ public class ChatRoom {
     }
     public String getMessageHistory(){
         StringBuilder sb = new StringBuilder();
-        for (Message message : messageHistory) {
-            sb.append(message.getFormattedContent()).append("\n");
+        for (ClientMessage clientMessage : clientMessageHistory) {
+            sb.append(clientMessage.getFormattedContent()).append("\n");
         }
         return sb.toString();
     }

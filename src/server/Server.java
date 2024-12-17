@@ -3,14 +3,16 @@ package server;
 import common.PacketInterpreter;
 import common.UDPSocket;
 import common.models.ChatRoom;
-import common.models.message.Message;
-import common.models.message.MessageFactory;
+import common.models.message.ClientMessage;
 import common.models.message.MessageType;
 import common.models.User;
+import common.models.message.ServerMessage;
+import common.models.message.ServerStatus;
+import common.utils.ServerMessageSerializer;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.SocketException;
-import java.util.Set;
 import java.util.logging.Level;
 
 public class Server extends UDPSocket {
@@ -24,7 +26,6 @@ public class Server extends UDPSocket {
 
     public static void main(String[] args) throws Exception {
         Server server = new Server(6969);
-
         while (true) {
             server.receive();
         }
@@ -32,52 +33,66 @@ public class Server extends UDPSocket {
 
     @Override
     public void processPacket(DatagramPacket packet) {
-
-        Message msg = interpreter.parsePacket(packet);
-        if(msg == null){
-            log(Level.SEVERE, "SEVERE ERROR WHEN PARSING PACKET WITH ORIGIN %s", packet.getAddress());
+        ClientMessage msg = interpreter.parsePacket(packet);
+        if (msg == null) {
+            log(Level.SEVERE, "Error parsing packet from %s", packet.getAddress());
             return;
         }
 
         if (msg.getType() == MessageType.COMMAND) {
-            User owner = msg.getOwner();
+            handleCommand(msg);
+        } else {
+            handleChatMessage(msg);
+        }
+    }
 
-            if(!chatRoom.addUser(owner)){
-                log(Level.WARNING, "User %s is already in the room", owner.getNick());
-                broadcastMessage(MessageFactory.createStatusMessage(String.format("User %s is already in the chat room!", owner.getNick())));
-            }
+    private void handleCommand(ClientMessage msg) {
+        User owner = msg.getOwner();
 
-            broadcastHistory(owner);
-            broadcastMessage(MessageFactory.createStatusMessage(String.format("User %s connected to the chat!", owner.getNick())));
+        if (!chatRoom.addUser(owner)) {
+            log(Level.WARNING, "User %s already in the room", owner.getNick());
+            sendMessage(new ServerMessage("Username not available", ServerStatus.ERROR), owner);
+        } else {
             log(Level.INFO, "New user entered the room: %s", owner.getNick());
-        }
-        else {
-            // Comprobación de seguridad por si el cliente logra "conectarse" pero no se encuentra en la sala
-            if(!chatRoom.hasUser(msg.getOwner())){
-                chatRoom.saveMessage(msg);
-                broadcastMessage(msg);
-            }
+            broadcastHistory(owner);
         }
     }
 
-    private void broadcastMessage(Message message) {
-        User owner = message.getOwner();
-        Set<User> users = chatRoom.getUsers();
-        byte[] msgData = message.getBytes();
-
-        for (User user : users) {
-            if(!user.equals(owner)){
-                send(msgData, user.getIp(), user.getPort());
-            }
+    private void handleChatMessage(ClientMessage msg) {
+        if (!chatRoom.hasUser(msg.getOwner())) {
+            log(Level.WARNING, "User %s not in the room", msg.getOwner().getNick());
+            return;
         }
+
+        chatRoom.saveMessage(msg);
+        broadcastMessage(msg);
     }
 
-    private void broadcastMessage(Message content, User user){
+    private void broadcastMessage(ClientMessage msg) {
+        byte[] msgData = msg.getBytes();
+
+        chatRoom.getUsers().stream()
+                .filter(user -> !user.equals(msg.getOwner()))
+                .forEach(user -> send(msgData, user.getIp(), user.getPort()));
+    }
+
+    private void sendMessage(ServerMessage content, User user) {
         send(content.getContent().getBytes(), user.getIp(), user.getPort());
     }
 
-    private void broadcastHistory(User user){
-        String history = chatRoom.getMessageHistory();
-        send(history.getBytes(), user.getIp(), user.getPort());
+    private void sendMessage(ServerMessage message) {
+        byte[] msgData;
+
+        try{
+            msgData = ServerMessageSerializer.serialize(message);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        chatRoom.getUsers().forEach(user -> send(msgData, user.getIp(), user.getPort()));
+    }
+
+    private void broadcastHistory(User user) {
+        send(chatRoom.getMessageHistory().getBytes(), user.getIp(), user.getPort());
     }
 }

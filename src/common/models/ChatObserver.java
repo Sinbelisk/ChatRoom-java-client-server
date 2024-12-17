@@ -1,7 +1,7 @@
 package common.models;
 
-import common.models.message.Message;
+import common.models.message.ClientMessage;
 
 public interface ChatObserver {
-    void broadcastMessage(Message message);
+    void broadcastMessage(ClientMessage clientMessage);
 }

@@ -1,7 +1,6 @@
 package common;
 
-import common.models.message.Message;
-import common.models.message.MessageFactory;
+import common.models.message.ClientMessage;
 import common.models.message.MessageType;
 import common.models.User;
 
@@ -15,7 +14,7 @@ public class PacketInterpreter {
     private static final Logger logger = SimpleLogger.getInstance().getLogger(PacketInterpreter.class);
 
     // Parses a packet data int a packet.
-    public Message parsePacket(DatagramPacket rawPacket) {
+    public ClientMessage parsePacket(DatagramPacket rawPacket) {
         String packetContent = new String(rawPacket.getData(), 0 , rawPacket.getLength());
         InetAddress userAddress = rawPacket.getAddress();
         int userPort = rawPacket.getPort();
@@ -34,9 +33,12 @@ public class PacketInterpreter {
         }
 
         User owner = new User(parts[1], userAddress, userPort);
-        Message msg = MessageFactory.createChatMessage(parts[2], owner);
+        ClientMessage msg;
+        if(type.equals(MessageType.MSG)) msg = new ClientMessage(parts[2], owner, MessageType.MSG);
+        else msg = new ClientMessage(packetContent, owner, MessageType.COMMAND);
 
         logger.log(Level.INFO, "New packetContent parsed: [id={0},type={1},data={2}]", new Object[]{msg.getId(), msg.getType().toString(), msg.getContent()});
+
         return msg;
     }
 }
