@@ -49,8 +49,6 @@ public class Server extends UDPSocket {
             return;
         }
         chatRoom.saveMessage(msg);
-
-        ServerMessage message = new ServerMessage(msg.getFormattedContent(), ServerMessage.ServerStatus.INFO.getValue());
-        messageSender.sendBroadcast(message,chatRoom, msg.getOwner());
+        messageSender.sendBroadcast(msg.getFormattedContent(),chatRoom, msg.getOwner());
     }
 }
