@@ -23,7 +23,7 @@ public class CommandHandler {
 
         switch (elements[0]) {
             case "login" -> handleLogin(owner);
-            case "list" -> messageSender.sendToUser(new ServerMessage(chatRoom.listUsers(), ServerMessage.ServerStatus.INFO.getValue()), owner);
+            case "list" -> messageSender.sendInfoToUser(chatRoom.listUsers(),owner);
             case "private" -> handlePrivateMessage(elements, message, owner);
             case "help" -> messageSender.sendInfoToUser(getCommandList(), owner);
         }
@@ -33,22 +33,23 @@ public class CommandHandler {
         User receipt = chatRoom.getUserByNick(elements[1]);
         String receiptNick = elements[1];
         if (receipt == null) {
-            messageSender.sendToUser(new ServerMessage("That user does not exist", ServerMessage.ServerStatus.ERROR.getValue()), owner);
+            messageSender.sendErrorToUser(String.format("User %s does not exists!", receiptNick), owner);
             return;
         }
         int index = message.getContent().indexOf(receiptNick);
         String privateMsg = message.getContent().substring(index + receiptNick.length()).trim();
 
         ChatMessage privateMessage = new ChatMessage(privateMsg, owner);
-        messageSender.sendToUser(new ServerMessage(privateMessage.getFormattedContentAsPrivate(), ServerMessage.ServerStatus.INFO.getValue()), receipt);
+        messageSender.sendInfoToUser(privateMessage.getFormattedContentAsPrivate(), receipt);
     }
 
     private void handleLogin(User owner) {
         if (!chatRoom.addUser(owner)) {
             messageSender.sendToUser(new ServerMessage("Username not available", ServerMessage.ServerStatus.ERROR.getValue()), owner);
         } else {
-            messageSender.sendToUser(new ServerMessage("Welcome to the room", ServerMessage.ServerStatus.LOGIN_OK.getValue()), owner);
+            messageSender.sendInfoToUser("Welcome to the room", owner);
             messageSender.sendHistoryToUser(chatRoom.getMessageHistory(), owner);
+            messageSender.sendBroadcast(String.format("User %s entered the chat!", owner.getNick()), chatRoom, owner);
         }
     }
 

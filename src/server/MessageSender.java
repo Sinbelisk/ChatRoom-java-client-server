@@ -6,6 +6,8 @@ import common.models.ChatRoom;
 import common.models.User;
 import common.models.message.ServerMessage;
 
+import java.util.Set;
+
 public class MessageSender {
     private final UDPSocket udpSocket;
 
@@ -30,6 +32,11 @@ public class MessageSender {
                 .forEach(user -> udpSocket.send(msgData, user.getIp(), user.getPort()));  // Enviamos el mensaje
     }
 
+    public void sendBroadcast(String message, ChatRoom chatRoom, User owner){
+        ServerMessage serverMessage = new ServerMessage(message, ServerMessage.ServerStatus.INFO.getValue());
+        sendBroadcast(serverMessage, chatRoom, owner);
+    }
+
     // Enviar el historial de mensajes a un usuario
     public void sendHistoryToUser(String messageHistory, User user) {
         ServerMessage historyMessage = new ServerMessage(messageHistory, ServerMessage.ServerStatus.INFO.getValue());
@@ -45,6 +52,11 @@ public class MessageSender {
     public void sendInfoToUser(String msg, User user){
         ServerMessage message = new ServerMessage(msg, ServerMessage.ServerStatus.INFO.getValue());
         sendToUser(message, user);
+    }
+
+    public void sendErrorToUser(String msg, User user){
+        ServerMessage message = new ServerMessage(msg, ServerMessage.ServerStatus.ERROR.getValue());
+        sendToUser(message,user);
     }
 }
 
