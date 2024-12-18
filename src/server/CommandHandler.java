@@ -32,7 +32,8 @@ public class CommandHandler {
 
     private void handleExit(User owner) {
         chatRoom.removeUser(owner);
-        messageSender.sendInfoToUser("Connection terminated.", owner);
+        messageSender.sendExitMessageToUser("Connection terminated.", owner);
+        messageSender.sendBroadcast(String.format("User %s left the chat!", owner.getNick()), chatRoom, owner);
     }
 
     private void handlePrivateMessage(String[] elements, ClientMessage message, User owner) {

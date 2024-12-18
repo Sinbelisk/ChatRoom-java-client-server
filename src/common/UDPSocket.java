@@ -11,7 +11,6 @@ import java.util.logging.Logger;
 public abstract class UDPSocket implements UDPOperation {
     protected final byte[] buffer;
     protected final Logger logger = SimpleLogger.getInstance().getLogger(getClass());
-
     protected final DatagramSocket socket;
 
     public UDPSocket(int port, int bufferSize) throws SocketException {

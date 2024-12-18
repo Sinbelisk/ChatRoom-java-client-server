@@ -53,6 +53,11 @@ public class MessageSender {
         sendToUser(message, user);
     }
 
+    public void sendExitMessageToUser(String msg, User user){
+        ServerMessage message = new ServerMessage(msg, ServerMessage.ServerStatus.DISCONNECT.getValue());
+        sendToUser(message, user);
+    }
+
     public void sendErrorToUser(String msg, User user){
         ServerMessage message = new ServerMessage(msg, ServerMessage.ServerStatus.ERROR.getValue());
         sendToUser(message,user);

@@ -14,47 +14,11 @@ import java.util.logging.Level;
 public class Client extends UDPSocket {
     private static final int DEFAULT_BUFFER_SIZE = 1024;
     private boolean connected = false;
+
     public Client() throws IOException {
         super(DEFAULT_BUFFER_SIZE);
         logger.setUseParentHandlers(false);
         logger.setLevel(Level.OFF);
-    }
-
-    @Override
-    public void processPacket(DatagramPacket packet) {
-        ServerMessage message = MessageUtil.parseServerMessage(packet.getData(), packet.getLength());
-        ServerMessage.ServerStatus status = message.getStatus();
-
-        switch (status){
-            case LOGIN_OK -> {
-                connected = true;
-            }
-            case INFO -> {
-            }
-            case DISCONNECT -> {
-                connected = false;
-            }
-        }
-
-        if(connected){
-            System.out.println("\r" + message.getContent());
-            System.out.print("\r> ");
-        }
-    }
-
-    public void connect(String nick){
-        ClientMessage request = new ClientMessage("login", nick, ClientMessage.COMMAND);
-        sendMessage(request);
-
-        receive();
-    }
-
-    public void sendMessage(ClientMessage message){
-        send(MessageUtil.createClientMessage(message), ServerConstants.SERVER_ADDRESS, ServerConstants.SERVER_PORT);
-    }
-
-    public boolean isConnected() {
-        return connected;
     }
 
     public static void main(String[] args) throws Exception {
@@ -69,19 +33,19 @@ public class Client extends UDPSocket {
             client.connect(user);
         } while (!client.isConnected());
 
-        Thread thread = new Thread(()->{
-            while (true){
+        Thread thread = new Thread(() -> {
+            while (client.isConnected()) {
                 client.receive();
             }
         });
 
         thread.start();
-        while(client.isConnected()){
+        while (client.isConnected()) {
             System.out.print("\r> ");
             String msg = s.nextLine();
 
             int type = 0;
-            if(msg.startsWith("/")){
+            if (msg.startsWith("/")) {
                 type = 1;
                 msg = msg.substring(1);
             }
@@ -89,5 +53,46 @@ public class Client extends UDPSocket {
             ClientMessage message = new ClientMessage(msg, user, type);
             client.sendMessage(message);
         }
+    }
+
+    @Override
+    public void processPacket(DatagramPacket packet) {
+        ServerMessage message = MessageUtil.parseServerMessage(packet.getData(), packet.getLength());
+        ServerMessage.ServerStatus status = message.getStatus();
+
+        switch (status) {
+            case LOGIN_OK -> {
+                connected = true;
+            }
+            case INFO -> {
+            }
+            case DISCONNECT -> {
+                System.out.println(".v");
+                connected = false;
+                disconnect();
+            }
+        }
+
+        System.out.println("\r" + message.getContent());
+        System.out.print("\r> ");
+    }
+
+    public void connect(String nick) {
+        ClientMessage request = new ClientMessage("login", nick, ClientMessage.COMMAND);
+        sendMessage(request);
+
+        receive();
+    }
+
+    private void disconnect() {
+        socket.close();
+    }
+
+    public void sendMessage(ClientMessage message) {
+        send(MessageUtil.createClientMessage(message), ServerConstants.SERVER_ADDRESS, ServerConstants.SERVER_PORT);
+    }
+
+    public boolean isConnected() {
+        return connected;
     }
 }
