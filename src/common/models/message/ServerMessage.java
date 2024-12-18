@@ -19,7 +19,7 @@ public class ServerMessage {
 
     // Enumerar los posibles estados para mayor claridad
     public enum ServerStatus {
-        LOGIN_OK(0), ERROR(1), INFO(2);
+        LOGIN_OK(0), ERROR(1), INFO(2), DISCONNECT(3);
 
         private final int value;
 

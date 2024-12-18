@@ -42,4 +42,20 @@ public class ChatRoom {
         }
         return sb.toString();
     }
+
+    public User getUserByNick(String nick){
+        for (User user : users) {
+            if(user.getNick().equalsIgnoreCase(nick)) return user;
+        }
+        return null;
+    }
+
+    public String listUsers(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("Users in the room: ").append(users.size());
+        for (User user : users) {
+            sb.append(user.getNick()).append("\n");
+        }
+        return sb.replace(0, sb.length()-1, "").toString();
+    }
 }

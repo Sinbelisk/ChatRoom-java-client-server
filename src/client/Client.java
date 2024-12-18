@@ -18,31 +18,30 @@ public class Client extends UDPSocket {
     private boolean connected = false;
     public Client() throws IOException {
         super(DEFAULT_BUFFER_SIZE);
-        FileHandler fileHandler = new FileHandler("chat.log", true);
-        logger.addHandler(fileHandler);
         logger.setUseParentHandlers(false);
         logger.setLevel(Level.OFF);
     }
 
     @Override
     public void processPacket(DatagramPacket packet) {
-        ServerMessage message = MessageUtil.parseServerMessage(packet.getData());
+        ServerMessage message = MessageUtil.parseServerMessage(packet.getData(), packet.getLength());
         ServerMessage.ServerStatus status = message.getStatus();
 
         switch (status){
-            case LOGIN_OK -> connected = true;
+            case LOGIN_OK -> {
+                connected = true;
+            }
             case INFO -> {
-                System.out.println("\r" + message.getContent());
-                System.out.print("\r> ");
             }
         }
+        System.out.println("\r" + message.getContent());
+        System.out.print("\r> ");
     }
 
     public void connect(String nick){
         ClientMessage request = new ClientMessage("login", nick, ClientMessage.COMMAND);
         sendMessage(request);
 
-        // Wait for confirmation
         receive();
     }
 
@@ -77,7 +76,13 @@ public class Client extends UDPSocket {
             System.out.print("\r> ");
             String msg = s.nextLine();
 
-            ClientMessage message = new ClientMessage(msg, user, 0);
+            int type = 0;
+            if(msg.startsWith("/")){
+                type = 1;
+                msg = msg.substring(1);
+            }
+
+            ClientMessage message = new ClientMessage(msg, user, type);
             client.sendMessage(message);
         }
     }

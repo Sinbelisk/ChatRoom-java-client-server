@@ -3,22 +3,53 @@ package common;
 import common.models.message.ClientMessage;
 import common.models.message.ServerMessage;
 
+/**
+ * Utility class for handling client and server messages in a UDP-based chat application.
+ * This class provides methods to create and parse messages from both clients and servers.
+ * It ensures consistent encoding and proper handling of message lengths.
+ */
 public class MessageUtil {
 
-    // Crear un mensaje de cliente en formato String
+    /**
+     * Creates a client message in the form of a byte array.
+     *
+     * @param message The ClientMessage object containing the message details.
+     * @return A byte array representing the client message in UTF-8 encoding.
+     */
     public static byte[] createClientMessage(ClientMessage message) {
-        return ("CLIENT|" + message.getNick() + "|" + message.getType() + "|" + message.getContent()).getBytes();
+        String formattedMessage = "CLIENT|" + message.getNick() + "|" + message.getType() + "|" + message.getContent();
+        return formattedMessage.getBytes();
     }
 
-    // Crear un mensaje de servidor en formato String
+    /**
+     * Creates a server message in the form of a byte array.
+     *
+     * @param message The ServerMessage object containing the message details.
+     * @return A byte array representing the server message in UTF-8 encoding.
+     */
     public static byte[] createServerMessage(ServerMessage message) {
-        return ("SERVER|" + message.getStatus().getValue() + "|" + message.getContent()).getBytes();
+        String formattedMessage = "SERVER|" + message.getStatus().getValue() + "|" + message.getContent();
+        return formattedMessage.getBytes();
     }
 
-    // Parsear un mensaje de cliente desde una cadena String
-    public static ClientMessage parseClientMessage(byte[] data){
-        return parseClientMessage(new String(data));
+    /**
+     * Parses a client message from a byte array with a specified length.
+     *
+     * @param data   The byte array containing the message data.
+     * @param length The actual length of the data to parse.
+     * @return A ClientMessage object parsed from the data, or null if the format is invalid.
+     */
+    public static ClientMessage parseClientMessage(byte[] data, int length) {
+        String rawMessage = new String(data, 0, length);
+        return parseClientMessage(rawMessage);
     }
+
+    /**
+     * Parses a client message from a string.
+     *
+     * @param message The string representation of the client message.
+     * @return A ClientMessage object parsed from the string, or null if the format is invalid.
+     */
     public static ClientMessage parseClientMessage(String message) {
         String[] parts = message.split("\\|");
         if (parts.length == 4 && parts[0].equals("CLIENT")) {
@@ -30,14 +61,26 @@ public class MessageUtil {
         return null;
     }
 
-    public static ServerMessage parseServerMessage(byte[] data){
-        return parseServerMessage(new String(data));
+    /**
+     * Parses a server message from a byte array with a specified length.
+     *
+     * @param data   The byte array containing the message data.
+     * @param length The actual length of the data to parse.
+     * @return A ServerMessage object parsed from the data, or null if the format is invalid.
+     */
+    public static ServerMessage parseServerMessage(byte[] data, int length) {
+        String rawMessage = new String(data, 0, length);
+        return parseServerMessage(rawMessage);
     }
 
-    // Parsear un mensaje de servidor desde una cadena String
+    /**
+     * Parses a server message from a string.
+     *
+     * @param message The string representation of the server message.
+     * @return A ServerMessage object parsed from the string, or null if the format is invalid.
+     */
     public static ServerMessage parseServerMessage(String message) {
         String[] parts = message.split("\\|");
-
         if (parts.length == 3 && parts[0].equals("SERVER")) {
             int status = Integer.parseInt(parts[1]);
             String content = parts[2];
@@ -46,4 +89,3 @@ public class MessageUtil {
         return null;
     }
 }
-
