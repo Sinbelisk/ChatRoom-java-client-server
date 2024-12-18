@@ -11,39 +11,39 @@ import java.util.Set;
 public class MessageSender {
     private final UDPSocket udpSocket;
 
-    // Constructor que recibe una referencia a UDPSocket (como Server)
+    // Constructor that takes a reference to UDPSocket (like Server)
     public MessageSender(UDPSocket udpSocket) {
-        this.udpSocket = udpSocket;  // Guardamos la referencia del UDPSocket
+        this.udpSocket = udpSocket;  // Store the reference to the UDPSocket
     }
 
-    // Enviar un mensaje a un único usuario
+    // Send a message to a single user
     public void sendToUser(ServerMessage message, User user) {
-        byte[] msgData = MessageUtil.createServerMessage(message);  // Convertimos el mensaje en un byte[]
-        udpSocket.send(msgData, user.getIp(), user.getPort());  // Enviamos el mensaje al usuario especificado
+        byte[] msgData = MessageUtil.createServerMessage(message);  // Convert the message to a byte array
+        udpSocket.send(msgData, user.getIp(), user.getPort());  // Send the message to the specified user
     }
 
-    // Enviar un mensaje de broadcast a todos los usuarios (menos al remitente)
+    // Send a broadcast message to all users (except the sender)
     public void sendBroadcast(ServerMessage message, ChatRoom chatRoom, User owner) {
-        byte[] msgData = MessageUtil.createServerMessage(message);  // Convertimos el mensaje en un byte[]
+        byte[] msgData = MessageUtil.createServerMessage(message);  // Convert the message to a byte array
 
-        // Enviamos el mensaje a todos los usuarios del chatRoom excepto al dueño (remitente)
+        // Send the message to all users in the chat room except the owner (sender)
         chatRoom.getUsers().stream()
                 .filter(user -> !user.equals(owner))
-                .forEach(user -> udpSocket.send(msgData, user.getIp(), user.getPort()));  // Enviamos el mensaje
+                .forEach(user -> udpSocket.send(msgData, user.getIp(), user.getPort()));  // Send the message
     }
 
-    public void sendBroadcast(String message, ChatRoom chatRoom, User owner){
+    public void sendBroadcast(String message, ChatRoom chatRoom, User owner) {
         ServerMessage serverMessage = new ServerMessage(message, ServerMessage.ServerStatus.INFO.getValue());
         sendBroadcast(serverMessage, chatRoom, owner);
     }
 
-    // Enviar el historial de mensajes a un usuario
+    // Send message history to a user
     public void sendHistoryToUser(String messageHistory, User user) {
         ServerMessage historyMessage = new ServerMessage(messageHistory, ServerMessage.ServerStatus.INFO.getValue());
         sendToUser(historyMessage, user);
     }
 
-    public void sendInfoToUser(String msg, User user){
+    public void sendInfoToUser(String msg, User user) {
         ServerMessage message = new ServerMessage(msg, ServerMessage.ServerStatus.INFO.getValue());
         sendToUser(message, user);
     }
@@ -53,15 +53,13 @@ public class MessageSender {
         sendToUser(message, user);
     }
 
-    public void sendExitMessageToUser(String msg, User user){
+    public void sendExitMessageToUser(String msg, User user) {
         ServerMessage message = new ServerMessage(msg, ServerMessage.ServerStatus.DISCONNECT.getValue());
         sendToUser(message, user);
     }
 
-    public void sendErrorToUser(String msg, User user){
+    public void sendErrorToUser(String msg, User user) {
         ServerMessage message = new ServerMessage(msg, ServerMessage.ServerStatus.ERROR.getValue());
-        sendToUser(message,user);
+        sendToUser(message, user);
     }
 }
-
-

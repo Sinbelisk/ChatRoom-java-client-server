@@ -42,7 +42,12 @@ public class Client extends UDPSocket {
         thread.start();
         while (client.isConnected()) {
             System.out.print("\r> ");
-            String msg = s.nextLine();
+            String msg = s.nextLine().trim();
+
+            if (msg.isEmpty()) {
+                System.out.println("Message cannot be empty.");
+                continue;
+            }
 
             int type = 0;
             if (msg.startsWith("/")) {
@@ -53,6 +58,7 @@ public class Client extends UDPSocket {
             ClientMessage message = new ClientMessage(msg, user, type);
             client.sendMessage(message);
         }
+
     }
 
     @Override
@@ -65,24 +71,32 @@ public class Client extends UDPSocket {
                 connected = true;
             }
             case INFO -> {
+                if (message.getContent().equals("ping")) {
+                    // Respond with "pong" when receiving "ping"
+                    ClientMessage pongMessage = new ClientMessage("pong", "", ClientMessage.COMMAND);
+                    sendMessage(pongMessage);
+                } else {
+                    System.out.println("\r" + message.getContent());
+                    System.out.print("\r> ");
+                }
             }
             case DISCONNECT -> {
-                System.out.println(".v");
+                System.out.println(message.getContent());
                 connected = false;
                 disconnect();
             }
         }
-
-        System.out.println("\r" + message.getContent());
-        System.out.print("\r> ");
     }
+
+
 
     public void connect(String nick) {
         ClientMessage request = new ClientMessage("login", nick, ClientMessage.COMMAND);
         sendMessage(request);
 
-        receive();
+        receive();  // Aquí esperamos la respuesta del servidor (bloquea hasta recibir un mensaje)
     }
+
 
     private void disconnect() {
         socket.close();

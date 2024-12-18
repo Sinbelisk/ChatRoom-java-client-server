@@ -36,5 +36,7 @@ public class User{
     public int hashCode() {
         return Objects.hash(nick);
     }
-
+    public String getKey() {
+        return nick + "@" + ip.getHostAddress() + ":" + port;
+    }
 }

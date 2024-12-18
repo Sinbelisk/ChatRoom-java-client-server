@@ -56,4 +56,14 @@ public class ChatMessage {
     public int hashCode() {
         return Objects.hash(id);
     }
+
+    @Override
+    public String toString() {
+        return "Message{" +
+                "id='" + id + '\'' +
+                ", content='" + content + '\'' +
+                ", owner=" + owner +
+                ", time=" + time +
+                '}';
+    }
 }
