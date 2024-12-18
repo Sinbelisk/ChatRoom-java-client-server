@@ -1,19 +1,24 @@
 package server;
 
 import common.MessageUtil;
+import common.SimpleLogger;
 import common.UDPSocket;
 import common.models.ChatRoom;
 import common.models.User;
 import common.models.message.ServerMessage;
 
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MessageSender {
     private final UDPSocket udpSocket;
+    private static final Logger logger = SimpleLogger.getInstance().getLogger(MessageSender.class);
 
     // Constructor that takes a reference to UDPSocket (like Server)
     public MessageSender(UDPSocket udpSocket) {
         this.udpSocket = udpSocket;  // Store the reference to the UDPSocket
+        logger.log(Level.INFO, "MessageSender initialized");
     }
 
     // Send a message to a single user
