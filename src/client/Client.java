@@ -31,9 +31,15 @@ public class Client extends UDPSocket {
             }
             case INFO -> {
             }
+            case DISCONNECT -> {
+                connected = false;
+            }
         }
-        System.out.println("\r" + message.getContent());
-        System.out.print("\r> ");
+
+        if(connected){
+            System.out.println("\r" + message.getContent());
+            System.out.print("\r> ");
+        }
     }
 
     public void connect(String nick){
@@ -70,7 +76,7 @@ public class Client extends UDPSocket {
         });
 
         thread.start();
-        while(true){
+        while(client.isConnected()){
             System.out.print("\r> ");
             String msg = s.nextLine();
 

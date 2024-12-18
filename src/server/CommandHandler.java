@@ -25,12 +25,19 @@ public class CommandHandler {
             case "login" -> handleLogin(owner);
             case "list" -> messageSender.sendInfoToUser(chatRoom.listUsers(),owner);
             case "private" -> handlePrivateMessage(elements, message, owner);
+            case "exit" -> handleExit(owner);
             case "help" -> messageSender.sendInfoToUser(getCommandList(), owner);
         }
     }
 
+    private void handleExit(User owner) {
+        chatRoom.removeUser(owner);
+        messageSender.sendInfoToUser("Connection terminated.", owner);
+    }
+
     private void handlePrivateMessage(String[] elements, ClientMessage message, User owner) {
         User receipt = chatRoom.getUserByNick(elements[1]);
+
         String receiptNick = elements[1];
         if (receipt == null) {
             messageSender.sendErrorToUser(String.format("User %s does not exists!", receiptNick), owner);
@@ -45,9 +52,9 @@ public class CommandHandler {
 
     private void handleLogin(User owner) {
         if (!chatRoom.addUser(owner)) {
-            messageSender.sendToUser(new ServerMessage("Username not available", ServerMessage.ServerStatus.ERROR.getValue()), owner);
+            messageSender.sendErrorToUser(String.format("Username %s is not available", owner.getNick()), owner);
         } else {
-            messageSender.sendInfoToUser("Welcome to the room", owner);
+            messageSender.sendLoginMessageToUser("Welcome to the room", owner);
             messageSender.sendHistoryToUser(chatRoom.getMessageHistory(), owner);
             messageSender.sendBroadcast(String.format("User %s entered the chat!", owner.getNick()), chatRoom, owner);
         }

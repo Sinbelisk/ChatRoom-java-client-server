@@ -19,6 +19,8 @@ public class Server extends UDPSocket {
         super(port, DEFAULT_BUFFER_SIZE);
         this.messageSender = new MessageSender(this);
         this. commandHandler = new CommandHandler(chatRoom, this, messageSender);
+
+        //socket.setSoTimeout(800);
     }
     public static void main(String[] args) throws Exception {
         Server server = new Server(6969);

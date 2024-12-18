@@ -43,14 +43,13 @@ public class MessageSender {
         sendToUser(historyMessage, user);
     }
 
-    // Enviar mensaje privado a un usuario
-    public void sendPrivateMessage(String privateMsg, User recipient, User owner) {
-        ServerMessage privateMessage = new ServerMessage(privateMsg, ServerMessage.ServerStatus.INFO.getValue());
-        sendToUser(privateMessage, recipient);  // Usamos el método para enviar al usuario
-    }
-
     public void sendInfoToUser(String msg, User user){
         ServerMessage message = new ServerMessage(msg, ServerMessage.ServerStatus.INFO.getValue());
+        sendToUser(message, user);
+    }
+
+    public void sendLoginMessageToUser(String msg, User user) {
+        ServerMessage message = new ServerMessage(msg, ServerMessage.ServerStatus.LOGIN_OK.getValue());
         sendToUser(message, user);
     }
 
