@@ -17,8 +17,8 @@ public class Server extends UDPSocket {
 
     public Server(int port) throws SocketException {
         super(port, DEFAULT_BUFFER_SIZE);
-        this. commandHandler = new CommandHandler(chatRoom, this);
         this.messageSender = new MessageSender(this);
+        this. commandHandler = new CommandHandler(chatRoom, this, messageSender);
     }
     public static void main(String[] args) throws Exception {
         Server server = new Server(6969);
