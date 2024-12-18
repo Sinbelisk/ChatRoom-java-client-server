@@ -12,22 +12,16 @@ public class ChatMessage {
     private final String content;
     private final User owner;
     private final Timestamp time;
-    private final MessageType type;
 
-    public ChatMessage(String content, User owner, MessageType type) {
+    public ChatMessage(String content, User owner) {
         this.id = UUID.randomUUID().toString();
         this.content = content;
         this.owner = owner;
         this.time = Timestamp.from(Instant.now());
-        this.type = type;
     }
 
     public String getContent() {
         return content;
-    }
-
-    public MessageType getType() {
-        return type;
     }
 
     public Timestamp getTime() {
@@ -42,13 +36,12 @@ public class ChatMessage {
         return id;
     }
 
-
     public String getFormattedContent(){
         return String.format("<%s> %s", owner.getNick(), content);
     }
 
-    public byte[] getBytes(){
-        return getFormattedContent().getBytes();
+    public String getFormattedContentAsPrivate(){
+        return String.format("<private from %s> %s", owner.getNick(), getContent());
     }
 
     @Override

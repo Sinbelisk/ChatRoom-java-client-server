@@ -52,10 +52,11 @@ public class ChatRoom {
 
     public String listUsers(){
         StringBuilder sb = new StringBuilder();
-        sb.append("Users in the room: ").append(users.size());
+        sb.append("Users in the room: ").append(users.size()).append("\n");
+        sb.append("Full list: ").append("\n");
         for (User user : users) {
             sb.append(user.getNick()).append("\n");
         }
-        return sb.replace(0, sb.length()-1, "").toString();
+        return sb.replace(sb.length()-1, sb.length(), "").toString();
     }
 }
