@@ -1,22 +1,14 @@
 package client;
 
-import common.PacketInterpreter;
+import common.MessageUtil;
 import common.UDPSocket;
-import common.models.User;
 import common.models.message.ClientMessage;
-import common.models.message.MessageType;
 import common.models.message.ServerMessage;
-import common.utils.MessageSerializer;
-import common.utils.ServerMessageSerializer;
 import server.ServerConstants;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
 import java.util.Scanner;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
@@ -34,28 +26,28 @@ public class Client extends UDPSocket {
 
     @Override
     public void processPacket(DatagramPacket packet) {
-        ServerMessage message;
+        ServerMessage message = MessageUtil.parseServerMessage(packet.getData());
+        ServerMessage.ServerStatus status = message.getStatus();
 
-        try{
-            message = ServerMessageSerializer.deserialize(packet.getData());
-            System.out.println("\r" + message.getContent());
-            System.out.print("\r> ");
-        } catch (IOException e){
-
+        switch (status){
+            case LOGIN_OK -> connected = true;
+            case INFO -> {
+                System.out.println("\r" + message.getContent());
+                System.out.print("\r> ");
+            }
         }
     }
 
-    public boolean connect(String nick){
-        ClientMessage connectionRequest = new ClientMessage("", user, MessageType.CONNECTION_REQUEST);
+    public void connect(String nick){
+        ClientMessage request = new ClientMessage("login", nick, ClientMessage.COMMAND);
+        sendMessage(request);
 
-        try{
-            byte[] request = MessageSerializer.serialize(connectionRequest);
-            send(request, ServerConstants.SERVER_ADDRESS, ServerConstants.SERVER_PORT);
+        // Wait for confirmation
+        receive();
+    }
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
+    public void sendMessage(ClientMessage message){
+        send(MessageUtil.createClientMessage(message), ServerConstants.SERVER_ADDRESS, ServerConstants.SERVER_PORT);
     }
 
     public boolean isConnected() {
@@ -64,11 +56,12 @@ public class Client extends UDPSocket {
 
     public static void main(String[] args) throws Exception {
         Client client = new Client();
+        String user = "";
         Scanner s = new Scanner(System.in);
 
         do {
             System.out.print("Nombre de Usuario: ");
-            String user = s.nextLine();
+            user = s.nextLine();
 
             client.connect(user);
         } while (!client.isConnected());
@@ -84,8 +77,8 @@ public class Client extends UDPSocket {
             System.out.print("\r> ");
             String msg = s.nextLine();
 
-            String test = String.format("msg;%s;%s", user, msg);
-            client.send(test.getBytes(), InetAddress.getLocalHost(), 6969);
+            ClientMessage message = new ClientMessage(msg, user, 0);
+            client.sendMessage(message);
         }
     }
 }

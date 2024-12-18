@@ -1,13 +1,13 @@
 package common.models;
 
-import common.models.message.ClientMessage;
+import common.models.message.ChatMessage;
 
 import java.util.*;
 
 public class ChatRoom {
     private static final int MAX_HISTORY = 10;
     private final Set<User> users = new HashSet<>();
-    private final Deque<ClientMessage> clientMessageHistory = new ArrayDeque<>(MAX_HISTORY);
+    private final Deque<ChatMessage> chatMessageHistory = new ArrayDeque<>(MAX_HISTORY);
     public boolean addUser(User user){
         if(users.contains(user)) return false;
 
@@ -20,10 +20,10 @@ public class ChatRoom {
     public boolean hasUser(User user){
         return users.contains(user);
     }
-    public void saveMessage(ClientMessage clientMessage){
-        if(clientMessageHistory.size() == MAX_HISTORY) clientMessageHistory.pollFirst();
+    public void saveMessage(ChatMessage chatMessage){
+        if(chatMessageHistory.size() == MAX_HISTORY) chatMessageHistory.pollFirst();
 
-        clientMessageHistory.addLast(clientMessage);
+        chatMessageHistory.addLast(chatMessage);
     }
     public int getCapacity(){
         return users.size();
@@ -32,14 +32,13 @@ public class ChatRoom {
     public boolean isFull(){
         return users.size() == 10;
     }
-
     public Set<User> getUsers() {
         return users;
     }
     public String getMessageHistory(){
         StringBuilder sb = new StringBuilder();
-        for (ClientMessage clientMessage : clientMessageHistory) {
-            sb.append(clientMessage.getFormattedContent()).append("\n");
+        for (ChatMessage chatMessage : chatMessageHistory) {
+            sb.append(chatMessage.getFormattedContent()).append("\n");
         }
         return sb.toString();
     }
