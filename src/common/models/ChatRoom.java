@@ -40,6 +40,7 @@ public class ChatRoom {
         for (ChatMessage chatMessage : chatMessageHistory) {
             sb.append(chatMessage.getFormattedContent()).append("\n");
         }
+        if(sb.isEmpty()) sb.append("Message history is empty");
         return sb.toString();
     }
 

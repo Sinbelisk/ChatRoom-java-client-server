@@ -1,6 +1,5 @@
 package server;
 
-import common.MessageUtil;
 import common.UDPOperation;
 import common.models.ChatRoom;
 import common.models.User;
@@ -26,6 +25,7 @@ public class CommandHandler {
             case "login" -> handleLogin(owner);
             case "list" -> messageSender.sendToUser(new ServerMessage(chatRoom.listUsers(), ServerMessage.ServerStatus.INFO.getValue()), owner);
             case "private" -> handlePrivateMessage(elements, message, owner);
+            case "help" -> messageSender.sendInfoToUser(getCommandList(), owner);
         }
     }
 
@@ -38,6 +38,7 @@ public class CommandHandler {
         }
         int index = message.getContent().indexOf(receiptNick);
         String privateMsg = message.getContent().substring(index + receiptNick.length()).trim();
+
         ChatMessage privateMessage = new ChatMessage(privateMsg, owner);
         messageSender.sendToUser(new ServerMessage(privateMessage.getFormattedContentAsPrivate(), ServerMessage.ServerStatus.INFO.getValue()), receipt);
     }
@@ -49,6 +50,15 @@ public class CommandHandler {
             messageSender.sendToUser(new ServerMessage("Welcome to the room", ServerMessage.ServerStatus.LOGIN_OK.getValue()), owner);
             messageSender.sendHistoryToUser(chatRoom.getMessageHistory(), owner);
         }
+    }
+
+    private String getCommandList(){
+        return """
+                Available commands:
+                - list: shows all players in the chat room
+                - private (username) (message): send a private message to another user
+                - exit: exit the chat room
+                """;
     }
 }
 

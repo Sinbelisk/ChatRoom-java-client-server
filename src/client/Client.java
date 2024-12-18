@@ -8,9 +8,7 @@ import server.ServerConstants;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.net.InetAddress;
 import java.util.Scanner;
-import java.util.logging.FileHandler;
 import java.util.logging.Level;
 
 public class Client extends UDPSocket {
