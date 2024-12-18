@@ -6,6 +6,7 @@ public class User{
     private final String nick;
     private final InetAddress ip;
     private final int port;
+    private int pingAttempts;
     public User(String nick, InetAddress ip, int port) {
         this.nick = nick;
         this.ip = ip;
@@ -22,6 +23,13 @@ public class User{
 
     public String getNick() {
         return nick;
+    }
+
+    public int getPingAttempts() {
+        return pingAttempts;
+    }
+    public void setPingAttempts(int pingAttempts) {
+        this.pingAttempts = pingAttempts;
     }
 
     @Override

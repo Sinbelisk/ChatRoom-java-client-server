@@ -14,6 +14,7 @@ import java.util.logging.Level;
 public class Client extends UDPSocket {
     private static final int DEFAULT_BUFFER_SIZE = 1024;
     private boolean connected = false;
+    private String nick;
 
     public Client() throws IOException {
         super(DEFAULT_BUFFER_SIZE);
@@ -73,7 +74,7 @@ public class Client extends UDPSocket {
             case INFO -> {
                 if (message.getContent().equals("ping")) {
                     // Respond with "pong" when receiving "ping"
-                    ClientMessage pongMessage = new ClientMessage("pong", "", ClientMessage.COMMAND);
+                    ClientMessage pongMessage = new ClientMessage("pong", nick, ClientMessage.COMMAND);
                     sendMessage(pongMessage);
                 } else {
                     System.out.println("\r" + message.getContent());
@@ -82,7 +83,6 @@ public class Client extends UDPSocket {
             }
             case DISCONNECT -> {
                 System.out.println(message.getContent());
-                connected = false;
                 disconnect();
             }
         }
@@ -93,12 +93,15 @@ public class Client extends UDPSocket {
     public void connect(String nick) {
         ClientMessage request = new ClientMessage("login", nick, ClientMessage.COMMAND);
         sendMessage(request);
+        this.nick = nick;
 
         receive();  // Aquí esperamos la respuesta del servidor (bloquea hasta recibir un mensaje)
     }
 
 
     private void disconnect() {
+        connected = false;
+        nick = "";
         socket.close();
     }
 

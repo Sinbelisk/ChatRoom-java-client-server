@@ -11,23 +11,27 @@ import common.models.message.ServerMessage;
 import java.net.DatagramPacket;
 import java.net.SocketException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 
+import java.util.Iterator;
+
 public class Server extends UDPSocket {
     private static final int DEFAULT_BUFFER_SIZE = 1024;
-    private static final long CLIENT_TIMEOUT = 5000;  // Timeout for waiting for a response to the ping (5 seconds)
-    private static final long PING_INTERVAL = 3000;  // Interval to send the ping (3 seconds)
+    private static final long PING_INTERVAL = 300;  // 2 minutos en milisegundos
+    private static final int MAX_PING_ATTEMPTS = 5;
+
     private final ChatRoom chatRoom = new ChatRoom();
     private final CommandHandler commandHandler;
     private final MessageSender messageSender;
-    private final Map<String, Long> clientLastPing = new HashMap<>();  // Map to store the last ping time for each client
+    private final Map<String, Long> clientLastPing = new HashMap<>();
+    private long lastPingTime;
 
     public Server(int port) throws SocketException {
         super(port, DEFAULT_BUFFER_SIZE);
         this.messageSender = new MessageSender(this);
         this.commandHandler = new CommandHandler(chatRoom, this, messageSender);
+        this.lastPingTime = System.currentTimeMillis();
     }
 
     public static void main(String[] args) throws Exception {
@@ -40,7 +44,7 @@ public class Server extends UDPSocket {
         ClientMessage clientMessage = MessageUtil.parseClientMessage(packet.getData(), packet.getLength());
 
         if (clientMessage == null) {
-            log(Level.SEVERE, "Error processing a null packet");
+            log(Level.SEVERE, "Error, a null or wrong packet arrived");
             return;
         }
 
@@ -50,6 +54,7 @@ public class Server extends UDPSocket {
         if (clientMessage.getContent().equals("pong")) {
             log(Level.INFO, "Pong received from client %s", user.getKey());
             clientLastPing.put(user.getKey(), System.currentTimeMillis());
+            user.setPingAttempts(0);
             return;
         }
 
@@ -74,7 +79,6 @@ public class Server extends UDPSocket {
         messageSender.sendBroadcast(msg.getFormattedContent(), chatRoom, msg.getOwner());
     }
 
-    // Send a ping to all clients
     private void sendPing() {
         log(Level.INFO, "Sending ping to %d users", chatRoom.getCapacity());
         chatRoom.getUsers().forEach(user -> {
@@ -83,35 +87,46 @@ public class Server extends UDPSocket {
             log(Level.FINE, "Ping sent to user %s", user.getKey());
         });
         log(Level.INFO, "Ping sending finished.");
+        lastPingTime = System.currentTimeMillis();
     }
 
-    // Check for disconnected clients by inactivity
-    private void checkDisconnectedClients() {
+    private void checkInactiveClients() {
         long currentTime = System.currentTimeMillis();
-        Iterator<User> iterator = chatRoom.getUsers().iterator();
 
+        Iterator<User> iterator = chatRoom.getUsers().iterator();
         while (iterator.hasNext()) {
             User user = iterator.next();
-            long lastPingTime = clientLastPing.getOrDefault(user.getKey(), 0L);
+            long lastPing = clientLastPing.getOrDefault(user.getKey(), 0L);
 
-            // If the client didn't respond to the ping within the timeout period, remove them
-            if (currentTime - lastPingTime > CLIENT_TIMEOUT) {
-                log(Level.WARNING, "Client %s disconnected due to inactivity.", user.getKey());
-                iterator.remove();  // Remove from the chat room
-                messageSender.sendExitMessageToUser("You have been disconnected due to inactivity", user);  // Send a disconnect message
+            if (currentTime - lastPing > PING_INTERVAL) {
+                int attempts = user.getPingAttempts() + 1;
+                user.setPingAttempts(attempts);
+
+                if (attempts >= MAX_PING_ATTEMPTS) {
+                    log(Level.WARNING, "Client %s has been expelled for inactivity.", user.getKey());
+                    chatRoom.removeUser(user); // Eliminar del chatRoom
+                    iterator.remove(); // Eliminar del iterador
+                } else {
+                    log(Level.WARNING, "Client %s did not respond, attempt %d/%d", user.getKey(), attempts, MAX_PING_ATTEMPTS);
+                }
             }
         }
     }
+
+
 
     // Main server loop: send ping and check disconnected clients
     public void run() {
         log(Level.INFO, "Server is running and ready to receive packets.");
         while (true) {
             receive();  // Receive data from clients
-            sendPing();  // Send ping messages to all users
-            checkDisconnectedClients();  // Check for clients that should be disconnected
+            long currentTime = System.currentTimeMillis();
+
+            // Check if it's time to send a ping
+            if (currentTime - lastPingTime >= PING_INTERVAL) {
+                sendPing();
+                checkInactiveClients();
+            }
         }
     }
 }
-
-
