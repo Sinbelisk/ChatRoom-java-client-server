@@ -53,7 +53,7 @@ public class LoginCommand implements Command {
      * @param owner The user who successfully logged in.
      */
     private void sendLoginSuccess(User owner) {
-        messageSender.sendLoginMessageToUser("Welcome to the room", owner);  // Send welcome message to the user
+        messageSender.sendLoginMessageToUser("Welcome to the room, use '/help' to view all available commands", owner);  // Send welcome message to the user
         messageSender.sendHistoryToUser(chatRoom.getMessageHistory(), owner);  // Send chat history to the user
         messageSender.sendBroadcast(String.format("User %s entered the chat!", owner.getNick()), chatRoom, owner);  // Broadcast user's entry
     }

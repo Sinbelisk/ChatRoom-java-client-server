@@ -21,6 +21,8 @@ Este proyecto implementa una **sala de chat cliente-servidor** utilizando **sock
 
 - **Registro de mensajes**: Todos los mensajes enviados por los usuarios del chat se guardan en un registro temporal que **almacena hasta 10**. Cada vez que entra un usuario el servidor le envía estos mensajes.
 
+- **Sistema de avisos:** El servidor envía avisos a los usuarios sobre determinados eventos, como comandos inválidos o conexiones y desconexiones de usuarios.
+
 
 ## 📋 Requisitos
 
