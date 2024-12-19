@@ -48,17 +48,10 @@ public class Server extends UDPSocket {
         String userKey = user.getKey();
 
         switch (clientMessage.getType()) {
-            case ClientMessage.PONG:
-                handlePong(userKey);
-                break;
-            case ClientMessage.COMMAND:
-                handleCommand(clientMessage, user);
-                break;
-            case ClientMessage.MSG:
-                handleMessage(clientMessage, user);
-                break;
-            default:
-                log(Level.WARNING, "Unknown message type '%d' from user %s", clientMessage.getType(), userKey);
+            case ClientMessage.PONG -> handlePong(userKey);
+            case ClientMessage.COMMAND -> handleCommand(clientMessage, user);
+            case ClientMessage.MSG -> handleMessage(clientMessage, user);
+            default -> log(Level.WARNING, "Unknown message type '%d' from user %s", clientMessage.getType(), userKey);
         }
 
         pingCounters.put(userKey, 0); // Reset ping counter on message receipt
@@ -94,6 +87,7 @@ public class Server extends UDPSocket {
 
     private void sendPingsAndCheckTimeouts() {
         Set<User> inactiveUsers = chatRoom.getInactiveUsers();
+        log(Level.INFO, "Sending pings to inactive users...");
         for (User user : inactiveUsers) {
             String userKey = user.getKey();
             pingCounters.put(userKey, pingCounters.getOrDefault(userKey, 0) + 1);
@@ -104,6 +98,7 @@ public class Server extends UDPSocket {
                 messageSender.sendPing(user);
             }
         }
+        log(Level.INFO, "Ping sending completed!");
     }
 
     private void handleInactiveUser(User user) {

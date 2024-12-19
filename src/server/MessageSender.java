@@ -71,6 +71,6 @@ public class MessageSender {
 
     // Send ping message to a user
     public void sendPing(User user) {
-        sendToUser("ping", ServerMessage.ServerStatus.INFO.getValue(), user);
+        sendToUser("ping", ServerMessage.ServerStatus.PING.getValue(), user);
     }
 }

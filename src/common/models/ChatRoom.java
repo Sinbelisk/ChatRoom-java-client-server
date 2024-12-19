@@ -5,7 +5,7 @@ import common.models.message.ChatMessage;
 import java.util.*;
 
 public class ChatRoom {
-    private static final long INACTIVITY_THRESHOLD = 5000  ; // 20s
+    private static final long INACTIVITY_THRESHOLD = 20000; // 20s
     private static final int MAX_HISTORY = 10;
     private final Set<User> users = new HashSet<>();
     private final Deque<ChatMessage> chatMessageHistory = new ArrayDeque<>(MAX_HISTORY);

@@ -8,7 +8,14 @@ import server.ServerConstants;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Scanner;
+import java.util.logging.Level;
+
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.util.Stack;
 import java.util.logging.Level;
 
 public class Client extends UDPSocket {
@@ -16,57 +23,20 @@ public class Client extends UDPSocket {
     private boolean connected = false;
     private String nick;
 
+    // Queue to store received messages
+    private final Queue<String> messageStack = new LinkedList<>();
+
     public Client() throws IOException {
         super(DEFAULT_BUFFER_SIZE);
         logger.setUseParentHandlers(false);
         logger.setLevel(Level.OFF);
     }
 
-    public static void main(String[] args) throws Exception {
-        Client client = new Client();
-        String user = "";
-        Scanner s = new Scanner(System.in);
-
-        do {
-            System.out.print("Nombre de Usuario: ");
-            user = s.nextLine();
-
-            client.connect(user);
-        } while (!client.isConnected());
-
-        Thread thread = new Thread(() -> {
-            while (client.isConnected()) {
-                client.receive();
-            }
-        });
-
-        thread.start();
-        while (client.isConnected()) {
-            System.out.print("\r> ");
-            String msg = s.nextLine().trim();
-
-            if (msg.isEmpty()) {
-                System.out.println("Message cannot be empty.");
-                continue;
-            }
-
-            int type = 0;
-            if (msg.startsWith("/")) {
-                type = 1;
-                msg = msg.substring(1);
-            }
-
-            ClientMessage message = new ClientMessage(msg, user, type);
-            client.sendMessage(message);
-        }
-
-    }
-
     @Override
     public void processPacket(DatagramPacket packet) {
         ServerMessage message = MessageUtil.parseServerMessage(packet.getData(), packet.getLength());
 
-        if(message == null){
+        if (message == null) {
             logger.log(Level.SEVERE, "Bad message received");
             return;
         }
@@ -74,23 +44,21 @@ public class Client extends UDPSocket {
         ServerMessage.ServerStatus status = message.getStatus();
 
         switch (status) {
-            case LOGIN_OK -> {
-                connected = true;
-            }
-            case INFO -> {
-                if (message.getContent().equals("ping")) {
-                    ClientMessage pongMessage = new ClientMessage("pong", nick, ClientMessage.PONG);
-                    sendMessage(pongMessage);
-                } else {
-                    System.out.println("\r" + message.getContent());
-                    System.out.print("\r> ");
-                }
-            }
-            case DISCONNECT -> {
-                System.out.println(message.getContent());
-                disconnect();
-            }
+            case LOGIN_OK -> connected = true;
+            case INFO, ERROR -> messageStack.add(message.getContent());
+            case DISCONNECT -> handleDisconnectMessage(message);
+            case PING -> handlePing();
         }
+    }
+
+    private void handlePing() {
+        ClientMessage pongMessage = new ClientMessage("pong", nick, ClientMessage.PONG);
+        sendMessage(pongMessage);
+    }
+
+    private void handleDisconnectMessage(ServerMessage message) {
+        messageStack.add(message.getContent());
+        disconnect();
     }
 
     public void connect(String nick) {
@@ -101,7 +69,7 @@ public class Client extends UDPSocket {
         receive();  // Wait for confirmation
     }
 
-    private void disconnect() {
+    public void disconnect() {
         connected = false;
         nick = "";
         socket.close();
@@ -113,5 +81,23 @@ public class Client extends UDPSocket {
 
     public boolean isConnected() {
         return connected;
+    }
+
+    // Method to retrieve and clear the message stack
+    public String retrieveNextMessage() {
+        if (!messageStack.isEmpty()) {
+            return messageStack.poll();
+        }
+        return null;
+    }
+
+    // Method to check if there are any pending messages
+    public boolean hasMessages() {
+        return !messageStack.isEmpty();
+    }
+
+    // Gets the current nick associated with this client
+    public String getNick() {
+        return nick;
     }
 }
