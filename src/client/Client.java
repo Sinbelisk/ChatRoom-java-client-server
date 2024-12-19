@@ -62,8 +62,12 @@ public class Client extends UDPSocket {
 
         ServerMessage.ServerStatus status = message.getStatus();
 
+        //todo: this can be simplified.
         switch (status) {
-            case LOGIN_OK -> connected = true;
+            case LOGIN_OK -> {
+                connected = true;
+                messageQueue.add(message.getContent());
+            }
             case INFO, ERROR -> messageQueue.add(message.getContent());
             case DISCONNECT -> handleDisconnectMessage(message);
             case PING -> handlePing();
