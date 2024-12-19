@@ -3,6 +3,7 @@ package common.models.message;
 public class ClientMessage {
     public static final int COMMAND  = 1;
     public static final int MSG = 0;
+    public static final int PONG = 2;
 
     private final String content;
     private final String nick;

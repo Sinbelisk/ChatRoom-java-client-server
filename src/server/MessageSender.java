@@ -67,4 +67,11 @@ public class MessageSender {
         ServerMessage message = new ServerMessage(msg, ServerMessage.ServerStatus.ERROR.getValue());
         sendToUser(message, user);
     }
+
+    public void sendPing(User user) {
+        String pingMessage = "ping";
+
+        ServerMessage message = new ServerMessage(pingMessage, ServerMessage.ServerStatus.INFO.getValue());
+        sendToUser(message, user);
+    }
 }

@@ -62,7 +62,7 @@ public class ChatMessage {
         return "Message{" +
                 "id='" + id + '\'' +
                 ", content='" + content + '\'' +
-                ", owner=" + owner +
+                ", owner=" + owner.getNick() +
                 ", time=" + time +
                 '}';
     }

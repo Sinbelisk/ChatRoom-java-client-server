@@ -65,6 +65,12 @@ public class Client extends UDPSocket {
     @Override
     public void processPacket(DatagramPacket packet) {
         ServerMessage message = MessageUtil.parseServerMessage(packet.getData(), packet.getLength());
+
+        if(message == null){
+            logger.log(Level.SEVERE, "Bad message received");
+            return;
+        }
+
         ServerMessage.ServerStatus status = message.getStatus();
 
         switch (status) {
@@ -73,8 +79,7 @@ public class Client extends UDPSocket {
             }
             case INFO -> {
                 if (message.getContent().equals("ping")) {
-                    // Respond with "pong" when receiving "ping"
-                    ClientMessage pongMessage = new ClientMessage("pong", nick, ClientMessage.COMMAND);
+                    ClientMessage pongMessage = new ClientMessage("pong", nick, ClientMessage.PONG);
                     sendMessage(pongMessage);
                 } else {
                     System.out.println("\r" + message.getContent());
@@ -88,16 +93,13 @@ public class Client extends UDPSocket {
         }
     }
 
-
-
     public void connect(String nick) {
         ClientMessage request = new ClientMessage("login", nick, ClientMessage.COMMAND);
         sendMessage(request);
         this.nick = nick;
 
-        receive();  // Aquí esperamos la respuesta del servidor (bloquea hasta recibir un mensaje)
+        receive();  // Wait for confirmation
     }
-
 
     private void disconnect() {
         connected = false;

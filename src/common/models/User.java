@@ -6,7 +6,6 @@ public class User{
     private final String nick;
     private final InetAddress ip;
     private final int port;
-    private int pingAttempts;
     public User(String nick, InetAddress ip, int port) {
         this.nick = nick;
         this.ip = ip;
@@ -25,12 +24,6 @@ public class User{
         return nick;
     }
 
-    public int getPingAttempts() {
-        return pingAttempts;
-    }
-    public void setPingAttempts(int pingAttempts) {
-        this.pingAttempts = pingAttempts;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -44,6 +37,12 @@ public class User{
     public int hashCode() {
         return Objects.hash(nick);
     }
+
+    /**
+     * Creates a string with a unique identified with the following format:
+     * nick@ip:port
+     * @return the key identifier.
+     */
     public String getKey() {
         return nick + "@" + ip.getHostAddress() + ":" + port;
     }

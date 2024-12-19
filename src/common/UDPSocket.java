@@ -54,7 +54,7 @@ public abstract class UDPSocket implements UDPOperation {
         }
     }
 
-    protected void log(Level level, String msg, Object... args) {
+    public void log(Level level, String msg, Object... args) {
         logger.log(level, String.format(msg, args));
     }
 }
