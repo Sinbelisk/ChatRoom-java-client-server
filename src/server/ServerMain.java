@@ -3,6 +3,7 @@ package server;
 import java.net.SocketException;
 
 import java.net.SocketException;
+import java.net.UnknownHostException;
 
 /**
  * The main class for the server application. It validates and processes the port argument
@@ -102,6 +103,8 @@ public class ServerMain {
             new Server(port).run();
         } catch (SocketException e) {
             throw new SocketException("Failed to bind the server to port " + port + ": " + e.getMessage());
+        } catch (UnknownHostException e) {
+            throw new RuntimeException("Failed to get host ip");
         }
     }
 }

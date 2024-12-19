@@ -10,6 +10,7 @@ import server.commands.CommandHandler;
 
 import java.net.DatagramPacket;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -38,7 +39,7 @@ public class Server extends UDPSocket {
      * @param port The port on which the server will listen for incoming packets.
      * @throws SocketException If there is an error with the UDP socket.
      */
-    public Server(int port) throws SocketException {
+    public Server(int port) throws SocketException, UnknownHostException {
         super(port, DEFAULT_BUFFER_SIZE);
         this.messageSender = new MessageSender(this);  // Create a new message sender
         this.commandHandler = new CommandHandler(chatRoom, messageSender);  // Create a new command handler

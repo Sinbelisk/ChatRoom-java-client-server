@@ -3,10 +3,7 @@ package common;
 import common.util.SimpleLogger;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.SocketException;
+import java.net.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,11 +23,11 @@ public abstract class UDPSocket implements UDPOperation {
      * @param bufferSize The size of the buffer to use for receiving data.
      * @throws SocketException If there is an error creating or binding the socket.
      */
-    public UDPSocket(int port, int bufferSize) throws SocketException {
-        socket = new DatagramSocket(port);  // Create socket bound to the specified port
+    public UDPSocket(int port, int bufferSize) throws SocketException, UnknownHostException {
+        socket = new DatagramSocket(port, InetAddress.getLocalHost());  // Create socket bound to the specified port
         buffer = new byte[bufferSize];  // Set up the buffer for receiving data
 
-        log(Level.INFO, "Socket created on port %d with buffer size %d", port, bufferSize);
+        log(Level.INFO, "Socket created on address %s:%d with buffer size %d",InetAddress.getLocalHost().getHostAddress() ,port, bufferSize);
     }
 
     /**
