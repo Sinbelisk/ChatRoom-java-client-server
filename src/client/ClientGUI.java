@@ -3,15 +3,17 @@ package client;
 import common.models.message.ClientMessage;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.Scanner;
 
 public class ClientGUI {
     private static final Scanner s = new Scanner(System.in);
     private static Client client = null;
+
     public static void main(String[] args) {
 
         try {
-            client = new Client();
+            client = new Client(InetAddress.getLocalHost(), 6969);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -25,7 +27,7 @@ public class ClientGUI {
     }
 
     private static void connectToServer() {
-        String user = "";
+        String user;
 
         while (!client.isConnected()) {
             System.out.print("Insert username (or 'exit' to exit): ");
@@ -39,6 +41,8 @@ public class ClientGUI {
             client.connect(user);
             if (!client.isConnected()) {
                 String cause = client.retrieveNextMessage();
+
+                if (cause == null) cause = "Cannot establish connection with the server";
                 System.out.printf("Unable to connect, cause: %s%n", cause);
             }
         }
@@ -49,9 +53,10 @@ public class ClientGUI {
             while (client.isConnected()) {
                 client.receive();
 
-                if(client.hasMessages()){
+                // Handle incoming messages
+                if (client.hasMessages()) {
                     String lastMessage = client.retrieveNextMessage();
-                    System.out.println("\r"+lastMessage);
+                    displayMessages(lastMessage);  // Display new message
                 }
             }
         });
@@ -59,7 +64,7 @@ public class ClientGUI {
     }
 
     private static void handleUserInput() {
-        System.out.print("\r> ");
+        System.out.print("\r");  // Only show > when expecting user input (use \r to overwrite the line)
         String msg = s.nextLine().trim();
 
         if (msg.isEmpty()) {
@@ -78,7 +83,7 @@ public class ClientGUI {
     private static void sendMessage(String msg) {
         int type = 0;
         if (msg.startsWith("/")) {
-            type = 1; // Comando
+            type = 1; // Command
             msg = msg.substring(1);
         }
 
@@ -87,8 +92,14 @@ public class ClientGUI {
     }
 
     private static void disconnectAndExit() {
-        System.out.println("Desconectando...");
+        System.out.println("Disconnecting...");
         client.disconnect();
         System.exit(0);
     }
+
+    private static void displayMessages(String lastMessage) {
+        // Display the last received message
+        System.out.println(lastMessage);
+    }
 }
+

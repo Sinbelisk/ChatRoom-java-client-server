@@ -4,32 +4,33 @@ import common.util.MessageUtil;
 import common.UDPSocket;
 import common.models.message.ClientMessage;
 import common.models.message.ServerMessage;
-import server.ServerConstants;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
+import java.net.InetAddress;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.Scanner;
-import java.util.logging.Level;
-
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.util.Stack;
 import java.util.logging.Level;
 
 public class Client extends UDPSocket {
+    private static final int PACKET_RECEPTION_TIMEOUT = 5000; //5s
     private static final int DEFAULT_BUFFER_SIZE = 1024;
     private boolean connected = false;
     private String nick;
 
     // Queue to store received messages
     private final Queue<String> messageStack = new LinkedList<>();
+    private final InetAddress serverAddress;
+    private final int serverPort;
 
-    public Client() throws IOException {
+    public Client(InetAddress serverAddress, int serverPort) throws IOException {
         super(DEFAULT_BUFFER_SIZE);
         logger.setUseParentHandlers(false);
         logger.setLevel(Level.OFF);
+        this.serverAddress = serverAddress;
+        this.serverPort = serverPort;
+
+        socket.setSoTimeout(PACKET_RECEPTION_TIMEOUT);
     }
 
     @Override
@@ -76,7 +77,7 @@ public class Client extends UDPSocket {
     }
 
     public void sendMessage(ClientMessage message) {
-        send(MessageUtil.createClientMessage(message), ServerConstants.SERVER_ADDRESS, ServerConstants.SERVER_PORT);
+        send(MessageUtil.createClientMessage(message), serverAddress, serverPort);
     }
 
     public boolean isConnected() {

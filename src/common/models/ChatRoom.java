@@ -84,4 +84,18 @@ public class ChatRoom {
 
         return inactiveUsers;
     }
+
+    public boolean hasInactiveUsers() {
+        long currentTime = System.currentTimeMillis();
+
+        // Iterate through users and check if any are inactive
+        for (User user : users) {
+            long lastActivity = lastActivityTimestamps.getOrDefault(user.getKey(), 0L);
+            if ((currentTime - lastActivity) >= INACTIVITY_THRESHOLD) {
+                return true;  // If we find an inactive user, return true immediately
+            }
+        }
+
+        return false;  // If no inactive users were found
+    }
 }

@@ -30,10 +30,6 @@ public class Server extends UDPSocket {
         this.commandHandler = new CommandHandler(chatRoom, messageSender);
     }
 
-    public static void main(String[] args) throws Exception {
-        new Server(6969).run();
-    }
-
     @Override
     public void processPacket(DatagramPacket packet) {
         ClientMessage clientMessage = MessageUtil.parseClientMessage(packet.getData(), packet.getLength());
@@ -81,7 +77,10 @@ public class Server extends UDPSocket {
         log(Level.INFO, "Server is running and ready to receive packets.");
         while (true) {
             receive();
-            sendPingsAndCheckTimeouts();
+
+            if(chatRoom.hasInactiveUsers()){
+                sendPingsAndCheckTimeouts();
+            }
         }
     }
 
