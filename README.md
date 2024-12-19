@@ -63,7 +63,10 @@ Este proyecto implementa una sala de chat cliente-servidor utilizando sockets UD
 ### **1. Compilar y Ejecutar el Proyecto**
 
 #### **Desde un IDE (IntelliJ IDEA o Eclipse)**
-
+El repositorio se puede clonar desde el repositorio:
+```bash
+   git clone https://github.com/Sinbelisk/ChatRoom-java-client-server.git 
+```
 1. **Importar el Proyecto**:
     - Importa el proyecto en tu IDE (como **IntelliJ IDEA** o **Eclipse**).
     - Asegúrate de que el proyecto esté configurado correctamente para compilar todas las clases. La mayoría de los IDEs lo hacen automáticamente cuando el proyecto se importa.
