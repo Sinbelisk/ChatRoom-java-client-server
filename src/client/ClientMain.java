@@ -81,7 +81,7 @@ public class ClientMain {
         try {
             port = Integer.parseInt(args[1]);
             if (port < 1 || port > 65535) {
-                throw new NumberFormatException();
+                throw new NumberFormatException("Port out of bounds");
             }
         } catch (NumberFormatException e) {
             System.out.println("Invalid port number. Please provide a valid port (1-65535).");
