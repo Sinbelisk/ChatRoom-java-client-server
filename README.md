@@ -2,6 +2,9 @@
 
 Este proyecto implementa una **sala de chat cliente-servidor** utilizando **sockets UDP** en Java. La aplicación permite a múltiples clientes comunicarse entre sí a través de un servidor central que gestiona los mensajes y los comandos del chat.
 
+**Hecho por**: Rafael Francisco Jiménez Rayo  
+**Enlace al repositorio de GitHub**: https://github.com/Sinbelisk/ChatRoom-java-client-server.git
+
 ---
 
 ## Características
@@ -77,6 +80,7 @@ Si al intentar conectarte aparece el mensaje **"Unable to connect to server"**, 
 - **Servidor Activo**: Asegúrate de que el servidor esté en ejecución y funcionando correctamente.
 - **IP y Puerto Correctos**: Confirma que el cliente está configurado con la dirección IP y el puerto correctos del servidor.
 - **Puerto Válido**: Verifica que el puerto configurado en el servidor esté accesible y no esté utilizado por otro servicio.
+- **Firewall**: Revisa que el Firewall no esté bloqueando el puerto utilizado para el servidor.
 
 ---
 
@@ -157,6 +161,4 @@ El proyecto presenta la siguente estructura:
                 ServerMessage.java   # Clase para mensajes generados por el servidor
 ```
 
-## Notas adicionales
-Repositorio del proyecto: https://github.com/Sinbelisk/ChatRoom-java-client-server.git
 ---

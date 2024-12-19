@@ -36,8 +36,10 @@ public class LoginCommand implements Command {
      */
     @Override
     public void execute(String[] elements, ClientMessage message, User owner) {
-        // Try to add the user to the chat room
-        if (!chatRoom.addUser(owner)) {
+        if(chatRoom.hasUser(owner)){ // if the user is in the room
+            messageSender.sendInfoToUser("You are already logged in!", owner);
+        }
+        else if (!chatRoom.addUser(owner)) {
             sendErrorMessage(String.format("Username %s is not available", owner.getNick()), owner);
         } else {
             sendLoginSuccess(owner);
