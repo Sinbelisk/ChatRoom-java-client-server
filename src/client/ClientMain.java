@@ -1,54 +1,67 @@
 package client;
 
-import common.models.message.ClientMessage;
+import client.model.message.ClientMessage;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Scanner;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.util.Scanner;
+/**
+ * The main class for the client application. It connects to a server via IP and port,
+ * handles user input for sending messages, and starts a thread to receive messages from the server.
+ */
+public class ClientMain {
 
-public class ClientGUI {
     private static final Scanner s = new Scanner(System.in);
     private static Client client = null;
 
+    /**
+     * The entry point of the client application. Validates the IP and port from the command line arguments,
+     * connects to the server, and manages user input and message display.
+     *
+     * @param args Command line arguments. Expects two arguments: the IP address and the port number.
+     */
     public static void main(String[] args) {
-        // Validación de parámetros y configuración
+        // Validate and retrieve the IP and port
         String ip = getIP(args);
         int port = getPort(args);
 
-        // Intentar conectar al servidor
+        // Attempt to connect to the server
         try {
             client = new Client(InetAddress.getByName(ip), port);
         } catch (IOException e) {
             throw new RuntimeException("Error connecting to server: " + e.getMessage(), e);
         }
 
-        // Mostrar IP y puerto conectados
+        // Display the connected IP and port
         System.out.println("Connecting to server at " + ip + ":" + port);
 
-        // Conectar al servidor y recibir mensajes
+        // Connect to the server and start receiving messages
         connectToServer();
         startReceivingThread();
 
-        // Manejar la entrada del usuario
+        // Handle user input
         while (client.isConnected()) {
             handleUserInput();
         }
     }
 
-    // Obtener la IP desde los parámetros
+    /**
+     * Retrieves and validates the IP address from the command line arguments.
+     *
+     * @param args The command line arguments.
+     * @return The validated IP address as a string.
+     * @throws RuntimeException If the IP address is invalid.
+     */
     private static String getIP(String[] args) {
         if (args.length < 2) {
             showUsageAndExit();
         }
 
         String ip = args[0];
-        // Validar que la IP sea válida
+        // Validate that the IP address is valid
         try {
-            InetAddress.getByName(ip); // Verifica que la IP sea válida
+            InetAddress.getByName(ip); // Verifies that the IP is valid
         } catch (IOException e) {
             System.out.println("Invalid IP address: " + ip);
             System.exit(1);
@@ -56,7 +69,13 @@ public class ClientGUI {
         return ip;
     }
 
-    // Obtener el puerto desde los parámetros
+    /**
+     * Retrieves and validates the port number from the command line arguments.
+     *
+     * @param args The command line arguments.
+     * @return The validated port number.
+     * @throws RuntimeException If the port number is invalid.
+     */
     private static int getPort(String[] args) {
         int port;
         try {
@@ -66,19 +85,24 @@ public class ClientGUI {
             }
         } catch (NumberFormatException e) {
             System.out.println("Invalid port number. Please provide a valid port (1-65535).");
-            System.exit(1); // Salir si el puerto no es válido
-            return -1; // Esto nunca será alcanzado, pero el compilador lo requiere
+            System.exit(1); // Exit if the port is invalid
+            return -1; // This will never be reached, but required for compilation
         }
         return port;
     }
 
-    // Muestra el uso correcto de los parámetros y termina la ejecución
+    /**
+     * Prints the correct usage of command line arguments and exits the program.
+     */
     private static void showUsageAndExit() {
         System.out.println("Usage: java ClientGUI <IP> <Port>");
         System.exit(1);
     }
 
-    // Conectar al servidor
+    /**
+     * Connects to the server by prompting the user to enter a username.
+     * If the connection fails, it retries until successful or the user exits.
+     */
     private static void connectToServer() {
         String user;
         while (!client.isConnected()) {
@@ -99,7 +123,10 @@ public class ClientGUI {
         }
     }
 
-    // Iniciar hilo para recibir mensajes
+    /**
+     * Starts a new thread to receive messages from the server and display them.
+     * This thread continues to run while the client is connected.
+     */
     private static void startReceivingThread() {
         Thread thread = new Thread(() -> {
             while (client.isConnected()) {
@@ -107,14 +134,17 @@ public class ClientGUI {
                 if (client.hasMessages()) {
                     String lastMessage = client.retrieveNextMessage();
                     displayMessages(lastMessage);
-                    System.out.print("\r> ");  // Mantener el prompt en la misma línea
+                    System.out.print("\r> ");  // Keep the prompt on the same line
                 }
             }
         });
         thread.start();
     }
 
-    // Manejar la entrada del usuario
+    /**
+     * Handles user input by prompting for a message. If the message is not empty or an exit command,
+     * it sends the message to the server.
+     */
     private static void handleUserInput() {
         System.out.print("> ");
         String msg = s.nextLine().trim();
@@ -132,11 +162,15 @@ public class ClientGUI {
         sendMessage(msg);
     }
 
-    // Enviar mensaje al servidor
+    /**
+     * Sends a message to the server. If the message starts with '/', it is considered a command.
+     *
+     * @param msg The message to send.
+     */
     private static void sendMessage(String msg) {
         int type = 0;
         if (msg.startsWith("/")) {
-            type = 1; // Comando
+            type = ClientMessage.COMMAND;
             msg = msg.substring(1);
         }
 
@@ -144,14 +178,20 @@ public class ClientGUI {
         client.sendMessage(message);
     }
 
-    // Desconectar y salir
+    /**
+     * Disconnects from the server and exits the program.
+     */
     private static void disconnectAndExit() {
         System.out.println("Disconnecting...");
         client.disconnect();
         System.exit(0);
     }
 
-    // Mostrar mensajes recibidos
+    /**
+     * Displays the last received message from the server.
+     *
+     * @param lastMessage The message to display.
+     */
     private static void displayMessages(String lastMessage) {
         System.out.println(lastMessage);
     }

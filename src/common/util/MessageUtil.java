@@ -1,7 +1,7 @@
 package common.util;
 
-import common.models.message.ClientMessage;
-import common.models.message.ServerMessage;
+import client.model.message.ClientMessage;
+import server.model.message.ServerMessage;
 
 /**
  * Utility class for handling client and server messages in a UDP-based chat application.
