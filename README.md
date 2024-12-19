@@ -131,7 +131,7 @@ Si prefieres ejecutar el proyecto desde **IntelliJ IDEA** en lugar de la termina
 2. En **Program Arguments**, especifica el puerto del servidor. Ejemplo: `12345`.
 
 #### **Ejemplo Visual**:
-![Configuración del Cliente](ReadmeImages/client_conf.png)
+![client conf.png](ReadmeImages%2Fclient%20conf.png)
 
 ---
 
