@@ -4,6 +4,21 @@ Este proyecto implementa una **sala de chat cliente-servidor** utilizando **sock
 
 ---
 
+## Características
+
+- **Conversación en tiempo real**: Permite a varios usuarios conversar simultáneamente en una sala de chat gestionada por un servidor central.
+
+- **Redirección de mensajes**: El servidor se encarga de procesar los mensajes enviados por los usuarios y redirigirlos a todos los usuarios conectados a la sala, asegurando la comunicación fluida.
+
+- **Gestión de comandos**: El servidor soporta varios comandos predefinidos (como `/help`, `/list`, `/private`, etc.) y tiene una arquitectura extensible gracias al patrón de diseño **Command**, lo que facilita la adición de nuevos comandos sin modificar la lógica base.
+
+- **Detección de inactividad**: El servidor monitorea la actividad de los usuarios. Si un usuario no interactúa durante un período prolongado, el servidor le enviará un **"ping"**. El cliente responde automáticamente al ping, si no responde _(principalmente debido a una salida forzada)_ al tercer ping, el servidor expulsará automáticamente al usuario de la sala para garantizar que los recursos no sean ocupados innecesariamente.
+
+- **Interfaz de usuario intuitiva**: Aunque el chat se basa en consola, el cliente es fácil de usar y los comandos son intuitivos. La aplicación puede servir como base para una futura interfaz gráfica (GUI) si se desea expandir.
+
+- **Registro de mensajes**: Todos los mensajes enviados por los usuarios del chat se guardan en un registro temporal que **almacena hasta 10**. Cada vez que entra un usuario el servidor le envía estos mensajes.
+
+
 ## 📋 Requisitos
 
 - **Java Development Kit (JDK)** 17+
