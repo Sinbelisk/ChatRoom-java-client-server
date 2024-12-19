@@ -1,10 +1,11 @@
-package server.commands;
+package server.commands.commands;
 
 import common.models.ChatRoom;
 import common.models.User;
 import common.models.message.ChatMessage;
 import common.models.message.ClientMessage;
 import server.MessageSender;
+import server.commands.Command;
 
 import java.util.Arrays;
 

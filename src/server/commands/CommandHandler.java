@@ -1,10 +1,11 @@
 package server.commands;
 
-import common.SimpleLogger;
+import common.util.SimpleLogger;
 import common.models.ChatRoom;
 import common.models.User;
 import common.models.message.ClientMessage;
 import server.MessageSender;
+import server.commands.commands.*;
 
 import java.util.HashMap;
 import java.util.Map;

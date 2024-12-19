@@ -1,9 +1,8 @@
 package server;
 
-import common.MessageUtil;
-import common.SimpleLogger;
+import common.util.MessageUtil;
+import common.util.SimpleLogger;
 import common.UDPOperation;
-import common.UDPSocket;
 import common.models.ChatRoom;
 import common.models.User;
 import common.models.message.ServerMessage;

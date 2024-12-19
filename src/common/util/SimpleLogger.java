@@ -1,4 +1,4 @@
-package common;
+package common.util;
 
 import java.text.MessageFormat;
 import java.util.HashMap;

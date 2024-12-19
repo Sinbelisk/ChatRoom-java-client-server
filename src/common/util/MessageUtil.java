@@ -1,4 +1,4 @@
-package common;
+package common.util;
 
 import common.models.message.ClientMessage;
 import common.models.message.ServerMessage;

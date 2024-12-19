@@ -1,8 +1,10 @@
-package server.commands;
+package server.commands.commands;
 
 import common.models.User;
 import common.models.message.ClientMessage;
 import server.MessageSender;
+import server.commands.Command;
+
 public class HelpCommand implements Command {
     private final MessageSender messageSender;
 

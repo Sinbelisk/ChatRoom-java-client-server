@@ -1,6 +1,6 @@
 package server;
 
-import common.MessageUtil;
+import common.util.MessageUtil;
 import common.UDPSocket;
 import common.models.ChatRoom;
 import common.models.User;

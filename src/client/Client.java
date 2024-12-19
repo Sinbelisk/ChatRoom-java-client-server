@@ -1,6 +1,6 @@
 package client;
 
-import common.MessageUtil;
+import common.util.MessageUtil;
 import common.UDPSocket;
 import common.models.message.ClientMessage;
 import common.models.message.ServerMessage;
