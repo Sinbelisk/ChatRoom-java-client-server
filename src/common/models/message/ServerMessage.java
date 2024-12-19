@@ -2,7 +2,7 @@ package common.models.message;
 
 public class ServerMessage {
     private final String content;
-    private final int status;  // 0 OK, 1 ERROR, 2 INFO
+    private final int status;
 
     public ServerMessage(String content, int status) {
         this.content = content;
@@ -19,7 +19,7 @@ public class ServerMessage {
 
     // Enumerar los posibles estados para mayor claridad
     public enum ServerStatus {
-        LOGIN_OK(0), ERROR(1), INFO(2), DISCONNECT(3);
+        LOGIN_OK(0), ERROR(1), INFO(2), DISCONNECT(3), PING(4);
 
         private final int value;
 

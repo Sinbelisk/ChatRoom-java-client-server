@@ -21,7 +21,6 @@ public class ClientMessage {
     public String getNick() {
         return nick;
     }
-
     public int getType() {
         return type;
     }
